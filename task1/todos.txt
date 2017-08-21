@@ -1,0 +1,7 @@
+1. Read boards
+3. Create board object
+4. create car objects
+5. Print init board
+6. Create function moveCar()
+7. Create function HasWon() => if car0 is at (5,2)(exit)
+8. Create a* //TODO l8er
