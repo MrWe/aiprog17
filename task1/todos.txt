@@ -9,5 +9,5 @@
 
 7. ERIK: create GUI: Tkinter
 8. AGGIE: create validate_move DONE
-9. Create function HasWon() => if car0 is at (5,2)(exit)
+9. Create function HasWon() => if car0 is at (5,2)(exit) DONE
 10. Create a* //TODO l8er

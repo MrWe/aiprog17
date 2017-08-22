@@ -4,6 +4,7 @@ from board import Board
 cars = "boards/easy-3.txt"
 carsArray = []
 board_size = 6
+winningPosition = (5,2)
 
 def main():
   #initialize empty board
@@ -20,6 +21,7 @@ def main():
   board = construct_board(board)
 
   print board
+  print has_won(carsArray[0], board)
 
 def construct_board(board):
   board = Board([], float('Inf'), float('Inf'), None)
@@ -40,6 +42,14 @@ def construct_board(board):
 
 def move_car(car, move, board):
   car.move(move, board)
+
+def has_won(car, board):
+  if not (car.Y, car.X) == winningPosition:
+      if car.O == 0:
+          return (car.Y + car.S, car.X) == winningPosition
+      else:
+          return (car.Y, car.X + car.S) == winningPosition
+  return True
 
 def read_cars(name):
   file = open(name)
