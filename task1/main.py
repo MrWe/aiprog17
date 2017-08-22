@@ -16,7 +16,7 @@ def main():
 
 
   print board
-  move_car(carsArray[0], -1)
+  move_car(carsArray[0], -1, board)
   board = construct_board(board)
 
   print board
@@ -38,13 +38,8 @@ def construct_board(board):
         board.boardArray[car.Y][car.X+j] = i
   return board
 
-def move_car(car, move):
-  if(is_valid_move(car, move)):
-    car.move(move)
-
-
-def is_valid_move(car, move):
-  return True
+def move_car(car, move, board):
+  car.move(move, board)
 
 def read_cars(name):
   file = open(name)
