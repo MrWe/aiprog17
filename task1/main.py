@@ -1,5 +1,6 @@
-from car import Car
 from board import Board
+from car import Car
+from node import Node
 import copy
 
 cars = "boards/easy-3.txt"
@@ -8,15 +9,18 @@ board_size = 6
 winningPosition = (5,2)
 open_list = []
 
+
 def main():
   #initialize empty board
   read_cars(name=cars)
+
   board = construct_board()
 
-  print(board)
+  #node = Node(carsArray)
   #move_car(carsArray[0], -1, board)
-  board = construct_board()
-
+  #node = Node(carsArray)
+  print(board)
+  board = construct_board
   open_list = get_all_neighbours(board)
 
   print(open_list)
