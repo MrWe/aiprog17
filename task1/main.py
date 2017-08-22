@@ -1,11 +1,12 @@
 from car import Car
 from board import Board
+import copy
 
 cars = "boards/easy-3.txt"
 carsArray = []
 board_size = 6
 winningPosition = (5,2)
-
+open_list = []
 
 def main():
   #initialize empty board
@@ -13,9 +14,12 @@ def main():
   board = construct_board()
 
   print(board)
-  move_car(carsArray[0], -1, board)
+  #move_car(carsArray[0], -1, board)
   board = construct_board()
 
+  open_list = get_all_neighbours(board)
+
+  print(open_list)
   print(board)
   print(has_won(carsArray[0], board))
 
@@ -57,3 +61,15 @@ def read_cars(name):
   for line in file:
     l = line.split(',')
     carsArray.append(Car(int(l[0]), int(l[1]), int(l[2]), int(l[3])))
+
+def get_all_neighbours(board):
+  neighbours = []
+  for i in range(len(carsArray)):
+    copy1 = copy.deepcopy(carsArray)
+    move_car(copy1[i], -1, board)
+    neighbours.append(copy1)
+    copy2 = copy.deepcopy(carsArray)
+    move_car(copy2[i], 1, board)
+    neighbours.append(copy2)
+
+  return neighbours

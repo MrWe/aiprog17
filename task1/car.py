@@ -36,7 +36,7 @@ class Car:
      #3. Check that move will not leave us in a position where another car is located
      if self.O == 0:
          if move == 1:
-             if not board.boardArray[self.Y][self.X + self.S] == '-':
+             if self.X + self.S < len(board.boardArray) and not board.boardArray[self.Y][self.X + self.S] == '-':
                  print('Car', board.boardArray[self.Y][self.X + self.S], 'is already at spot', self.Y, self.X + move)
                  return False
          else:

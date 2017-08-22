@@ -15,6 +15,7 @@ class App(tk.Frame):
     self._createCanvas()
     self.task()
     self.isStartet = False
+    self.index = 0
 
   def on_start_press(self):
     if(not self.isStartet):
@@ -24,7 +25,6 @@ class App(tk.Frame):
 
   def on_move_press(self):
 
-    print(main.construct_board())
     main.move_car(main.carsArray[0], -1, main.construct_board())
     self.canvas.delete("all")
 
@@ -42,6 +42,7 @@ class App(tk.Frame):
     self.canvas.grid(row=0, column=0, sticky='nsew')
 
   def show_board(self):
+    self.canvas.delete("all")
     for t in range(len(main.carsArray)):
       car = main.carsArray[t]
       if(t == 0):
@@ -65,8 +66,7 @@ class App(tk.Frame):
   def task(self):
     #curr_board = main.current_board
     self.show_board()
-
-    self.after(100, self.task)  # reschedule event in 2 seconds
+    self.after(50, self.task)  # reschedule event in 2 seconds
 
 
 
