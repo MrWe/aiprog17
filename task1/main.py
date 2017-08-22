@@ -11,7 +11,6 @@ def main():
   board = []
   for i in range(board_size):
       board.append(["-"] * board_size)
-
   read_cars(name=cars)
   board = construct_board(board)
 
@@ -56,5 +55,3 @@ def read_cars(name):
   for line in file:
     l = line.split(',')
     carsArray.append(Car(int(l[0]), int(l[1]), int(l[2]), int(l[3])))
-
-main()
