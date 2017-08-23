@@ -4,6 +4,7 @@ class Node:
     self.parent = parent
     self.h = self.get_heuristic()
     self.g = g
+    self.f = self.g + self.h
 
 
   '''
