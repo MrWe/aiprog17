@@ -5,6 +5,9 @@ class Car:
     self.Y = Y
     self.S = S
 
+  def __str__(self):
+    return("Y:" + str(self.Y) + " " "X:" + str(self.X))
+
     '''
     params: move
     a move is a number indicating number of spaces a car should move in its given orientation
@@ -25,18 +28,18 @@ class Car:
          return False
      #2. Check that move will return a position within given indices
      if self.O == 0:
-         if self.X + move > 5 or self.X + move < 0:
+         if self.X + move + self.S - 1 > 5 or self.X + move < 0:
              print('Cannot move outside given X axis')
              return False
      if self.O == 1:
-         if self.Y + move > 5 or self.Y + move < 0:
+         if self.Y + move + self.S - 1 > 5 or self.Y + move < 0:
              print('Cannot move outside given Y axis')
              return False
 
      #3. Check that move will not leave us in a position where another car is located
      if self.O == 0:
          if move == 1:
-             if self.X + self.S < len(board.boardArray) and not board.boardArray[self.Y][self.X + self.S] == '-':
+             if not board.boardArray[self.Y][self.X + self.S] == '-':
                  print('Car', board.boardArray[self.Y][self.X + self.S], 'is already at spot', self.Y, self.X + move)
                  return False
          else:

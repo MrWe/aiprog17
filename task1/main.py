@@ -14,20 +14,23 @@ def main():
   #initialize empty board
   read_cars(name=cars)
 
-  board = construct_board()
+  board = construct_board(carsArray)
 
   #node = Node(carsArray)
   #move_car(carsArray[0], -1, board)
   #node = Node(carsArray)
   print(board)
-  board = construct_board
   open_list = get_all_neighbours(board)
 
-  print(open_list)
+  for carlist in open_list:
+    for car in carlist:
+      print(car)
+    print("\n")
+
   print(board)
   print(has_won(carsArray[0], board))
 
-def construct_board():
+def construct_board(cars):
   board = []
   for i in range(board_size):
       board.append(["-"] * board_size)
@@ -36,8 +39,8 @@ def construct_board():
   for i in range(board_size):
       board.boardArray.append(["-"] * board_size)
 
-  for i in range(len(carsArray)):
-    car = carsArray[i]
+  for i in range(len(cars)):
+    car = cars[i]
     board.boardArray[car.Y][car.X] = i #Obsobs, flipped coords to accomodate cartesian plane
 
     if(car.O == 1):
@@ -70,10 +73,12 @@ def get_all_neighbours(board):
   neighbours = []
   for i in range(len(carsArray)):
     copy1 = copy.deepcopy(carsArray)
-    move_car(copy1[i], -1, board)
-    neighbours.append(copy1)
+    if(Car.is_valid_move(copy1[i], -1, construct_board(copy1))):
+      move_car(copy1[i], -1, construct_board(copy1))
+      neighbours.append(copy1)
     copy2 = copy.deepcopy(carsArray)
-    move_car(copy2[i], 1, board)
-    neighbours.append(copy2)
+    if(Car.is_valid_move(copy2[i], 1, construct_board(copy2))):
+      move_car(copy2[i], 1, construct_board(copy2))
+      neighbours.append(copy2)
 
   return neighbours

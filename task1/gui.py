@@ -25,7 +25,7 @@ class App(tk.Frame):
 
   def on_move_press(self):
 
-    main.move_car(main.carsArray[0], -1, main.construct_board())
+    main.move_car(main.carsArray[0], -1, main.construct_board(main.carsArray))
     self.canvas.delete("all")
 
 
