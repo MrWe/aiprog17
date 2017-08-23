@@ -1,7 +1,7 @@
 class Node:
-  def __init__(self, cars, g):
+  def __init__(self, cars, g, parent):
     self.cars = cars
-    self.parent = None
+    self.parent = parent
     self.h = self.get_heuristic()
     self.g = g
 

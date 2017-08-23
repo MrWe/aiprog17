@@ -15,15 +15,16 @@ def main():
   read_cars(name=cars)
 
   board = construct_board(carsArray)
+  initNode = Node(carsArray, 0, None)
 
   #node = Node(carsArray)
   #move_car(carsArray[0], -1, board)
   #node = Node(carsArray)
   print(board)
-  open_list = get_all_neighbours(board)
+  open_list = get_all_neighbours(initNode)
 
   for carlist in open_list:
-    for car in carlist:
+    for car in carlist.cars:
       print(car)
     print("\n")
 
@@ -69,16 +70,18 @@ def read_cars(name):
     l = line.split(',')
     carsArray.append(Car(int(l[0]), int(l[1]), int(l[2]), int(l[3])))
 
-def get_all_neighbours(board):
+def get_all_neighbours(parent):
   neighbours = []
-  for i in range(len(carsArray)):
-    copy1 = copy.deepcopy(carsArray)
+  for i in range(len(parent.cars)):
+
+    copy1 = copy.deepcopy(parent.cars)
     if(Car.is_valid_move(copy1[i], -1, construct_board(copy1))):
       move_car(copy1[i], -1, construct_board(copy1))
-      neighbours.append(copy1)
-    copy2 = copy.deepcopy(carsArray)
+      neighbours.append(Node(copy1, parent.g+1, parent))
+
+    copy2 = copy.deepcopy(parent.cars)
     if(Car.is_valid_move(copy2[i], 1, construct_board(copy2))):
       move_car(copy2[i], 1, construct_board(copy2))
-      neighbours.append(copy2)
+      neighbours.append(Node(copy2, parent.g+1, parent))
 
   return neighbours
