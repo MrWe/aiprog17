@@ -1,5 +1,4 @@
-from util import get_all_neighbours, has_won, construct_board
-
+from util import get_all_neighbours, has_won, construct_board, set_path
 
 closed_set = []
 
@@ -35,10 +34,10 @@ def a_star(board, start_node):
 
     while not open_set.is_empty():
         current_node = open_set.pop()
-        print(current_node.h, current_node.g)
 
         if has_won(current_node):
             print("Yay, we found the goal!")
+            return current_node
             return path(current_node)
 
         closed_set.append(current_node)
@@ -68,7 +67,7 @@ def contains(other):
     return False
 
 def path(current_node):
-    print(construct_board(current_node.cars))
+    set_path(current_node)
     while (current_node.parent):
-        print(construct_board(current_node.parent.cars), '\n')
+        #print(construct_board(current_node.parent.cars), '\n')
         current_node = current_node.parent
