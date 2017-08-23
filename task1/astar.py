@@ -1,3 +1,8 @@
+from util import get_all_neighbours, has_won, construct_board
+
+
+closed_set = []
+
 class PriorityQueue: #we use a min-heap
     def __init__(self):
         self.nodes = []
@@ -7,7 +12,7 @@ class PriorityQueue: #we use a min-heap
 
     def contains(self, other):
         for node in self.nodes:
-            if node.position == other.position:
+            if node == other:
                 return True
         return False
 
@@ -22,3 +27,48 @@ class PriorityQueue: #we use a min-heap
         self.nodes.sort(key=lambda x: x.f, reverse = True)
         node = self.nodes.pop()
         return node
+
+def a_star(board, start_node):
+    open_set = PriorityQueue()
+
+    open_set.push(start_node)
+
+    while not open_set.is_empty():
+        current_node = open_set.pop()
+        print(current_node.h, current_node.g)
+
+        if has_won(current_node):
+            print("Yay, we found the goal!")
+            return path(current_node)
+
+        closed_set.append(current_node)
+
+        for neighbour in get_all_neighbours(current_node):
+            if contains(neighbour):
+                continue
+
+            neighbour_g = current_node.get_g() + 1 #TODO: Add support for variable cost of one step
+
+            if not open_set.contains(neighbour):
+                open_set.push(neighbour)
+
+            elif neighbour_g >= neighbour.get_g(): #Not an augmenting path
+                continue
+
+            #Wow we found a great new node with an augmenting path
+            neighbour.parent = current_node
+
+            neighbour.g = neighbour_g
+            neighbour.f = neighbour_g + neighbour.get_h()
+
+def contains(other):
+    for node in closed_set:
+        if node == other:
+            return True
+    return False
+
+def path(current_node):
+    print(construct_board(current_node.cars))
+    while (current_node.parent):
+        print(construct_board(current_node.parent.cars), '\n')
+        current_node = current_node.parent
