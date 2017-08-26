@@ -21,6 +21,7 @@ class App(tk.Frame):
   def on_start_press(self):
     if(not self.isStartet):
       self.reverse_path = main.main()
+      print(self.reverse_path)
       while (self.reverse_path.parent):
           self.path.insert(0, self.reverse_path)
           self.reverse_path = self.reverse_path.parent

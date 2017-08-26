@@ -22,15 +22,14 @@ def set_path(path):
 def get_all_neighbours(parent):
   neighbours = []
   for i in range(len(parent.cars)):
-
     copy1 = copy.deepcopy(parent.cars)
-    if(Car.is_valid_move(copy1[i], -1, construct_board(copy1))):
-      move_car(copy1[i], -1, construct_board(copy1))
+    if(Car.is_valid_move(copy1[i], -1, copy1)):
+      move_car(copy1[i], -1, copy1)
       neighbours.append(Node(copy1, parent.g+1, parent))
 
     copy2 = copy.deepcopy(parent.cars)
-    if(Car.is_valid_move(copy2[i], 1, construct_board(copy2))):
-      move_car(copy2[i], 1, construct_board(copy2))
+    if(Car.is_valid_move(copy2[i], 1, copy2)):
+      move_car(copy2[i], 1, copy2)
       neighbours.append(Node(copy2, parent.g+1, parent))
 
   return neighbours

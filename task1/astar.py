@@ -27,14 +27,15 @@ class PriorityQueue: #we use a min-heap
         node = self.nodes.pop()
         return node
 
-def a_star(board, start_node):
+def a_star(start_node):
     open_set = PriorityQueue()
 
     open_set.push(start_node)
 
     while not open_set.is_empty():
         current_node = open_set.pop()
-
+        print(len(open_set.nodes))
+        print("\n")
         if has_won(current_node):
             print("Yay, we found the goal!")
             return current_node
@@ -69,5 +70,4 @@ def contains(other):
 def path(current_node):
     set_path(current_node)
     while (current_node.parent):
-        #print(construct_board(current_node.parent.cars), '\n')
         current_node = current_node.parent
