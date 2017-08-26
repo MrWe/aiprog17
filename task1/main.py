@@ -3,17 +3,20 @@ from car import Car
 from node import Node
 from astar import a_star
 import util
+import time
 
-cars = "boards/expert-2.txt"
+cars = "boards/easy-3.txt"
 carsArray = []
 
 def main():
   #initialize empty board
   carsArray = read_cars(name=cars)
-
   initNode = Node(carsArray, 0, None)
-  board = util.construct_board(carsArray)
-  path = a_star(board, initNode)
+  t0 = time.time()
+  path = a_star(initNode)
+  t1 = time.time()
+  total = t1-t0
+  print(total)
   return path
 
 def read_cars(name):

@@ -29,7 +29,7 @@ class Node:
     else:
       sx, sy = (self.cars[0].X, self.cars[0].Y + (self.cars[0].S - 1))
     ex, ey = (5, 2)
-    return abs(ex - sx) + abs(ey - sy)
+    return 0.5*(abs(ex - sx) + abs(ey - sy))
 
   def get_g(self):
         return self.g
