@@ -1,31 +1,27 @@
 from util import get_all_neighbours, has_won, construct_board, set_path
 import heapq
-
-closed_set = []
+closed_list = []
+closed_set = set()
 
 class PriorityQueue: #we use a min-heap
     def __init__(self):
         self.nodes = []
-
-    def __cmp__(self, other):
-        return cmp(self.f, other.f) #order heap by f(n) value
+        self.set = set()
 
     def contains(self, other):
-        for node in self.nodes:
-            if node == other:
-                return True
-        return False
+        return other.hash in self.set
 
     def is_empty(self):
         return len(self.nodes) == 0
 
     def push(self, node):
-        self.nodes.append(node)
-        self.nodes.sort(key=lambda x: x.f, reverse = True)
+        heapq.heappush(self.nodes,(node.f, node))
+        self.set.add(node.hash)
+        #self.nodes.sort(key=lambda x: x.f, reverse = True)
 
     def pop(self):
-        self.nodes.sort(key=lambda x: x.f, reverse = True)
-        return self.nodes.pop()
+        #self.nodes.sort(key=lambda x: x.f, reverse = True)
+        return heapq.heappop(self.nodes)[1]
 
 def a_star(board, start_node):
     open_set = PriorityQueue()
@@ -39,7 +35,8 @@ def a_star(board, start_node):
             print("Yay, we found the goal!")
             return current_node
 
-        closed_set.append(current_node)
+        closed_list.append(current_node)
+        closed_set.add(current_node.hash)
 
         for neighbour in get_all_neighbours(current_node):
             if contains(neighbour):
@@ -60,10 +57,7 @@ def a_star(board, start_node):
             neighbour.f = neighbour_g + neighbour.get_h()
 
 def contains(other):
-    for node in closed_set:
-        if node == other:
-            return True
-    return False
+    return other.hash in closed_set
 
 def path(current_node):
     set_path(current_node)

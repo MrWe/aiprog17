@@ -6,7 +6,7 @@ import util
 import time
 
 
-cars = "boards/easy-3.txt"
+cars = "boards/expert-2.txt"
 carsArray = []
 
 def main():
