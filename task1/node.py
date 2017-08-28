@@ -1,5 +1,4 @@
-import numpy as np
-import random as r
+
 
 class Node:
   def __init__(self, cars, g, parent):
