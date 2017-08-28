@@ -1,3 +1,5 @@
+
+
 class Node:
   def __init__(self, cars, g, parent):
     self.cars = cars
@@ -17,6 +19,8 @@ class Node:
 
     return True
 
+
+
   def __str__(self):
       return 'I am a node' + str(self.h) + str(self.g)
 
@@ -29,7 +33,16 @@ class Node:
     else:
       sx, sy = (self.cars[0].X, self.cars[0].Y + (self.cars[0].S - 1))
     ex, ey = (5, 2)
-    return abs(ex - sx) + abs(ey - sy)
+
+    cars_infront_of_goal = 0
+
+    for i in range(self.cars[0].X + self.cars[0].S, 5):
+      itercars = iter(self.cars)
+      next(itercars)
+      for car in itercars:
+        if(car.X == i or car.X + (car.S-1) == i):
+          cars_infront_of_goal += 1
+    return ((abs(ex - sx) + abs(ey - sy)) + cars_infront_of_goal)
 
   def get_g(self):
         return self.g

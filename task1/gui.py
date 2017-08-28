@@ -43,6 +43,9 @@ class App(tk.Frame):
     self.moveButton = tk.Button(text="Step", command=lambda : self.on_move_press())
     self.moveButton.grid()
 
+    self.exitButton = tk.Button(text="Exit", command=lambda : exit())
+    self.exitButton.grid()
+
   def _createCanvas(self):
     self.canvas = tk.Canvas(width = 6 * self.rect_size, height = 6 * self.rect_size,
                             bg = "grey" )
