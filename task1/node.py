@@ -3,23 +3,17 @@
 class Node:
   def __init__(self, cars, g, parent):
     self.cars = cars
+    self.hash = self.car_hash()
     self.parent = parent
     self.h = self.get_heuristic()
     self.g = g
     self.f = self.g + self.h
 
   def __eq__(self, other):
-    for car in self.cars:
-        hasEqual = False
-        for other_car in other.cars:
-            if car.__dict__ == other_car.__dict__:
-                hasEqual = True
-        if not hasEqual:
-            return False
+    return self.hash == other.hash
 
-    return True
-
-
+  def __lt__(self, other):
+    return self.f < other.f #order heap by f(n) value
 
   def __str__(self):
       return 'I am a node' + str(self.h) + str(self.g)
@@ -43,6 +37,13 @@ class Node:
         if(car.X == i or car.X + (car.S-1) == i):
           cars_infront_of_goal += 1
     return ((abs(ex - sx) + abs(ey - sy)) + cars_infront_of_goal)
+
+  def car_hash(self):
+    carHash = ""
+    for car in self.cars:
+      carHash += str(car.X)
+      carHash += str(car.Y)
+    return carHash
 
   def get_g(self):
         return self.g

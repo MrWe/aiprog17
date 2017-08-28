@@ -1,4 +1,5 @@
 from util import get_all_neighbours, has_won, construct_board, set_path
+import heapq
 
 closed_set = []
 
@@ -24,8 +25,7 @@ class PriorityQueue: #we use a min-heap
 
     def pop(self):
         self.nodes.sort(key=lambda x: x.f, reverse = True)
-        node = self.nodes.pop()
-        return node
+        return self.nodes.pop()
 
 def a_star(board, start_node):
     open_set = PriorityQueue()
@@ -38,7 +38,6 @@ def a_star(board, start_node):
         if has_won(current_node):
             print("Yay, we found the goal!")
             return current_node
-            return path(current_node)
 
         closed_set.append(current_node)
 

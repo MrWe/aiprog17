@@ -5,15 +5,16 @@ from astar import a_star
 import util
 import time
 
-cars = "boards/hard-3.txt"
+
+cars = "boards/easy-3.txt"
 carsArray = []
 
 def main():
   #initialize empty board
   carsArray = read_cars(name=cars)
-
-  initNode = Node(carsArray, 0, None)
   board = util.construct_board(carsArray)
+  initNode = Node(carsArray, 0, None)
+
   t0 = time.time()
   path = a_star(board, initNode)
   t1 = time.time()

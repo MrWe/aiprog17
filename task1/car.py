@@ -16,13 +16,11 @@ class Car:
     a move is a number indicating number of spaces a car should move in its given orientation
     '''
   def move(self, move, board):
-    if self.is_valid_move(move, board):
-        if(self.O == 0):
-          self.X += move
-        else:
-          self.Y += move
-        return True
-    return False
+    if(self.O == 0):
+      self.X += move
+    else:
+      self.Y += move
+
 
   def is_valid_move(self, move, board):
      #1. Only move one space at a time

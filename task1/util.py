@@ -2,11 +2,11 @@ from board import Board
 from car import Car
 from node import Node
 import copy
+import time
 
 board_size = 6
 winningPosition = (5,2)
 finished_path = []
-
 
 def has_won(node):
   if not (node.cars[0].Y, node.cars[0].X) == winningPosition:
@@ -22,16 +22,21 @@ def set_path(path):
 def get_all_neighbours(parent):
   neighbours = []
   for i in range(len(parent.cars)):
-    copy1 = copy.deepcopy(parent.cars)
-    if(Car.is_valid_move(copy1[i], -1, construct_board(copy1))):
-      move_car(copy1[i], -1, construct_board(copy1))
+    copy1 = []
+    copy2 = []
+    for car in parent.cars:
+      O, X, Y, S = car.O, car.X, car.Y, car.S
+      copy1.append(Car(O, X, Y, S))
+      copy2.append(Car(O, X, Y, S))
+    board = construct_board(copy1)
+
+    if(Car.is_valid_move(copy1[i], -1, board)):
+      move_car(copy1[i], -1, board)
       neighbours.append(Node(copy1, parent.g+1, parent))
 
-    copy2 = copy.deepcopy(parent.cars)
-    if(Car.is_valid_move(copy2[i], 1, construct_board(copy2))):
-      move_car(copy2[i], 1, construct_board(copy2))
+    if(Car.is_valid_move(copy2[i], 1, board)):
+      move_car(copy2[i], 1, board)
       neighbours.append(Node(copy2, parent.g+1, parent))
-
   return neighbours
 
 def construct_board(cars):
@@ -53,7 +58,6 @@ def construct_board(cars):
     if(car.O == 0):
       for j in range(car.S):
         board.boardArray[car.Y][car.X+j] = i
-
   return board
 
 def move_car(car, move, board):
