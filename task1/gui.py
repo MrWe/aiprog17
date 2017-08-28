@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 import tkinter as tk
 import main
-from car import Car
-import random
-import time
 
 class App(tk.Frame):
   def __init__( self, parent):
@@ -28,20 +25,10 @@ class App(tk.Frame):
       self.isStartet = True
       self.canvas.delete("all")
 
-  def on_move_press(self):
-    if(self.index == len(self.path)-1):
-      self.index = 0
-    else:
-      self.index += 1
-    self.canvas.delete("all")
-
 
   def createWidgets(self):
     self.startButton = tk.Button(text="Start", command=lambda : self.on_start_press())
     self.startButton.grid()
-
-    self.moveButton = tk.Button(text="Step", command=lambda : self.on_move_press())
-    self.moveButton.grid()
 
     self.exitButton = tk.Button(text="Exit", command=lambda : exit())
     self.exitButton.grid()

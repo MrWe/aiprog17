@@ -2,11 +2,9 @@ from board import Board
 from car import Car
 from node import Node
 import copy
-import time
 
 board_size = 6
 winningPosition = (5,2)
-finished_path = []
 
 def has_won(node):
   if not (node.cars[0].Y, node.cars[0].X) == winningPosition:
@@ -15,9 +13,6 @@ def has_won(node):
     else:
       return (node.cars[0].X, node.cars[0].Y + node.cars[0].S - 1 ) == winningPosition
   return True
-
-def set_path(path):
-  finished_path = path
 
 def get_all_neighbours(parent):
   neighbours = []

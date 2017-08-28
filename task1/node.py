@@ -1,5 +1,3 @@
-
-
 class Node:
   def __init__(self, cars, g, parent):
     self.cars = cars
@@ -16,10 +14,10 @@ class Node:
     return self.f < other.f #order heap by f(n) value
 
   def __str__(self):
-      return 'I am a node' + str(self.h) + str(self.g)
+      return str(self.__dict__)
 
   '''
-  Car[0] is currently hardcoded to be to rectangles long
+  Car[0] is currently hardcoded to be 2 rectangles long
   '''
   def get_heuristic(self):
     if(self.cars[0].O == 0):
