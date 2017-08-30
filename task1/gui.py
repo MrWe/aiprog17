@@ -22,6 +22,7 @@ class App(tk.Frame):
           self.path.insert(0, self.reverse_path)
           self.reverse_path = self.reverse_path.parent
       self.path.insert(0, self.reverse_path)
+      print("Path length:", len(self.path))
       self.isStartet = True
       self.canvas.delete("all")
 
