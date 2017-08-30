@@ -34,3 +34,7 @@ The two factors for each cell indicates the following:
 | Depth-first | 34, 18 | 422, 49 | 605, 126 | 3086, 124 |
 | Breadth-first | 94, 17 | 774, 25 | 1708, 34 | 10194, 74 |
 | Best-first | 61, 17 | 528, 25 | 634, 34 | 4472, 74 |
+
+As we can see from this table, all of the algorithms have areas where they perform well.
+On the _easy_ board, DFS performs quicker, and finds an _almost_ optimal solution. However, on harder boards, it immediately decides on the first solution and it becomes evident that the path it decides on virtually never can be accepted as it is much longer than the optimal path.
+On the other hand, we see that BFS _will_ find the optimal solution, but with far many more expanded nodes. As the the search tree grows, the number of nodes expanded grows much too rapidly for it to perform efficiently. Here, we can see that the A* _best first_ search far outperforms the other algorithms as it is generally quick enough _and_ guarantees an optimal solution.
