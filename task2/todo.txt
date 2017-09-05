@@ -1,0 +1,10 @@
+1. Implement constraints
+  a. All segments in a row or col must be seperated by one or more white spaces
+    i. For a segment A, segment B must be placed at a space > start(A) + len(A)
+  b. All segments must be placed within the given boundaries
+  c. No segments must create a conflict between a row and a column
+    i.  Implement validate_row_state() //TODO: Aggie
+    ii. Implement detect_conflict(row, col)
+2. Implement preprocessing of data
+  a. Generate all possible states (domain) for a row
+3. Implement method for eliminating invalid states from the domain
