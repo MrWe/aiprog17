@@ -1,6 +1,6 @@
 1. Implement constraints
   a. All segments in a row or col must be seperated by one or more white spaces
-    i. For a segment A, segment B must be placed at a space > start(A) + len(A)
+    i. For a segment X, segment Z must be placed at a space > start(A)=X + len(A)=Y
   b. All segments must be placed within the given boundaries
   c. No segments must create a conflict between a row and a column
     i.  Implement validate_row_state() //TODO: Aggie

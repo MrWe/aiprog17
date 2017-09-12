@@ -3,13 +3,21 @@ import itertools
 def generate_permutations(row, len_row):
     domain = ['']*(len_row-1)
     index = 0
+    constraints = [c5]
     for i in range(len(row)):
         for k in range(row[i]):
             domain[index] = chr(65+i)
             index += 1
     domain = list(set(itertools.permutations(domain)))
+
     isDeleted = False
     for i in range(len(domain)-1,-1,-1):
+        for constraint in constraints:
+            if revise(domain[i], constraint):
+                domain.remove(domain[i])
+
+
+        '''
         for k in range(len(domain[i])-1):
             for j in range(k+1, len(domain[i])):
                 if(domain[i][k] == '' or domain[i][j] == ''):
@@ -21,17 +29,23 @@ def generate_permutations(row, len_row):
             if(isDeleted):
                 isDeleted = False
                 break
-
+        '''
     domain = list(set(domain))
 
-    for n in domain:
-        print(n)
+    for line in domain:
+        print(line)
 
     #options = list(filter(lambda ))
 
 
-def revise():
-    pass
+def revise(row, constraint):
+    revised = False
+    for i in range(len(row)-1):
+
+        for j in range(i+1, len(row)):
+            if constraint(row[i], row[j]):
+                return True
+    return False
 
 
 def makefunc(names , expression , envir=globals()):
@@ -50,4 +64,3 @@ c3 = makefunc(['x'], 'x >= 0')
 c4 = makefunc(['x', 'y'], 'x < y') #y = len(board)-1
 
 c5 = makefunc(['x', 'y'], 'x > y')
-
