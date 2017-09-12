@@ -22,11 +22,10 @@ def generate_permutations(row, len_row):
                 isDeleted = False
                 break
 
-    new_domain = []
+    domain = list(set(domain))
+
     for n in domain:
-        if(n not in new_domain):
-            new_domain.append(n)
-    print(new_domain)
+        print(n)
 
     #options = list(filter(lambda ))
 
