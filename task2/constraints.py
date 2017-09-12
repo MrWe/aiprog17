@@ -7,7 +7,7 @@ def generate_permutations(row, len_row):
         for k in range(row[i]):
             domain[index] = chr(65+i)
             index += 1
-    domain = list(itertools.permutations(domain))
+    domain = list(set(itertools.permutations(domain)))
     isDeleted = False
     for i in range(len(domain)-1,-1,-1):
         for k in range(len(domain[i])-1):
@@ -28,6 +28,10 @@ def generate_permutations(row, len_row):
         print(n)
 
     #options = list(filter(lambda ))
+
+
+def revise():
+    pass
 
 
 def makefunc(names , expression , envir=globals()):
