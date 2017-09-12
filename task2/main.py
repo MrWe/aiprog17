@@ -10,12 +10,15 @@ else:
     in_file = "boards/hut.txt"
 
 
+
 def main():
   #initialize empty board
   rows, columns = read_board(in_file)
-  hitlers_final_solution = csp.CSP(rows, columns)
-  print(rows)
-  print(constraints.generate_row_states(rows[1], 6))
+  constraints.generate_permutations(rows[4], len(rows))
+  #print(rows, columns)
+  solution = csp.CSP(rows, columns)
+
+
   return rows, columns
 
 def read_board(name):
