@@ -31,7 +31,6 @@ def generate_permutations(row, len_row):
                 break
         '''
     domain = list(set(domain))
-
     for line in domain:
         print(line)
 
@@ -39,9 +38,7 @@ def generate_permutations(row, len_row):
 
 
 def revise(row, constraint):
-    revised = False
     for i in range(len(row)-1):
-
         for j in range(i+1, len(row)):
             if constraint(row[i], row[j]):
                 return True
@@ -63,4 +60,6 @@ c2 = makefunc(['x','y','z'], 'z > x+y')
 c3 = makefunc(['x'], 'x >= 0')
 c4 = makefunc(['x', 'y'], 'x < y') #y = len(board)-1
 
-c5 = makefunc(['x', 'y'], 'x > y')
+#c4 = makefunc(['x', 'y'], "") 
+
+c5 = makefunc(['x', 'y'], "x is not '' and y is not '' and x > y")
