@@ -2,6 +2,7 @@ import csp
 import time
 import sys
 import constraints
+import node
 
 #Write only filename to choose board
 if len(sys.argv) > 1:
@@ -14,12 +15,16 @@ else:
 def main():
   #initialize empty board
   rows, columns = read_board(in_file)
-  constraints.generate_permutations(rows[4], len(rows))
-  #print(rows, columns)
-  solution = csp.CSP(rows, columns)
 
+  row_nodes = []
+  col_nodes = []
 
-  return rows, columns
+  for row in rows:
+      row_nodes.append(node.Node(len(columns), row))
+  for column in columns:
+      col_nodes.append(node.Node(len(rows), column))
+
+  return row_nodes, col_nodes
 
 def read_board(name):
   string_board = ""

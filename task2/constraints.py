@@ -1,41 +1,5 @@
 import itertools
-
-def generate_permutations(row, len_row):
-    domain = ['']*(len_row-1)
-    index = 0
-    constraints = [c5]
-    for i in range(len(row)):
-        for k in range(row[i]):
-            domain[index] = chr(65+i)
-            index += 1
-    domain = list(set(itertools.permutations(domain)))
-
-    isDeleted = False
-    for i in range(len(domain)-1,-1,-1):
-        for constraint in constraints:
-            if revise(domain[i], constraint):
-                domain.remove(domain[i])
-
-
-        '''
-        for k in range(len(domain[i])-1):
-            for j in range(k+1, len(domain[i])):
-                if(domain[i][k] == '' or domain[i][j] == ''):
-                    continue
-                if c5(domain[i][k], domain[i][j]):
-                    domain.remove(domain[i])
-                    isDeleted = True
-                    break
-            if(isDeleted):
-                isDeleted = False
-                break
-        '''
-    domain = list(set(domain))
-    for line in domain:
-        print(line)
-
-    #options = list(filter(lambda ))
-
+import node
 
 def revise(row, constraint):
     for i in range(len(row)-1):
@@ -43,6 +7,12 @@ def revise(row, constraint):
             if constraint(row[i], row[j]):
                 return True
     return False
+
+def reduce_domain():
+    for constraint in constraints:
+        for i in range(len(domain)-1,-1,-1):
+            if revise(domain[i], constraint):
+                domain.remove(domain[i])
 
 
 def makefunc(names , expression , envir=globals()):
@@ -54,12 +24,25 @@ def intersect_row_col(row, col, index):
         pass
     return False
 
+def validate_alphabetical_order(row):
+    biggest = chr(0)
+    for item in row:
+        if item == "":
+            continue
+        elif item >= biggest:
+            biggest = item
+        else:
+            return False
+    return True
+
+
+# Ensure that it is a space between any segment A and B
 c1 = makefunc(['x','y','z'], 'x+y < z') #x = start(a), y= len(a), z = start(b)
 c2 = makefunc(['x','y','z'], 'z > x+y')
 
-c3 = makefunc(['x'], 'x >= 0')
-c4 = makefunc(['x', 'y'], 'x < y') #y = len(board)-1
+# Make sure that all elements are in the correct order
+c_alpha = makefunc(['row'], "validate_alphabetical_order(row)")
 
-#c4 = makefunc(['x', 'y'], "") 
+row = ('A', 'B', 'B', '', 'B', '')
 
-c5 = makefunc(['x', 'y'], "x is not '' and y is not '' and x > y")
+print(c_alpha(row))
