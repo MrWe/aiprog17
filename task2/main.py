@@ -24,7 +24,12 @@ def main():
   for column in columns:
       col_nodes.append(node.Node(len(rows), column))
 
-  return row_nodes, col_nodes
+
+  for row_node in row_nodes:
+      row_node.domain = constraints.reduce_domain(row_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
+  for col_node in col_nodes:
+      col_node.domain = constraints.reduce_domain(col_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
+
 
 def read_board(name):
   string_board = ""

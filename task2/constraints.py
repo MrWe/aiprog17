@@ -3,17 +3,17 @@ import node
 
 def revise(row, constraint):
     for i in range(len(row)-1):
-        for j in range(i+1, len(row)):
-            if constraint(row[i], row[j]):
-                return True
+        if not constraint(row):
+            return True
     return False
 
-def reduce_domain():
+def reduce_domain(domain, constraints):
+    new_domain = domain
     for constraint in constraints:
         for i in range(len(domain)-1,-1,-1):
             if revise(domain[i], constraint):
-                domain.remove(domain[i])
-
+                new_domain.remove(domain[i])
+    return new_domain
 
 def makefunc(names , expression , envir=globals()):
     args = ','.join(names) # eg [’x’,’y’,’z’] => ’x,y,z’
@@ -35,14 +35,30 @@ def validate_alphabetical_order(row):
             return False
     return True
 
+def validate_space_between_elements(row):
+    current = None
+
+    for item in row:
+        if item == '' and current == None:
+            continue
+        if item == 'A' and current == None:
+            current = ord('A')
+            continue
+
+        if item == chr(current):
+            continue
+        elif item == '':
+            current += 1
+        elif item == chr(current-1):
+            return False
+        else:
+            return False
+    return True
+
+
+#row = ["A", "","A","","",""]
+#print(validate_space_between_elements(row))
 
 # Ensure that it is a space between any segment A and B
 c1 = makefunc(['x','y','z'], 'x+y < z') #x = start(a), y= len(a), z = start(b)
 c2 = makefunc(['x','y','z'], 'z > x+y')
-
-# Make sure that all elements are in the correct order
-c_alpha = makefunc(['row'], "validate_alphabetical_order(row)")
-
-row = ('A', 'B', 'B', '', 'B', '')
-
-print(c_alpha(row))
