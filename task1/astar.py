@@ -1,6 +1,6 @@
 from util import get_all_neighbours, has_won
 import lists
-
+#hei
 
 def a_star(board, start_node):
     generated_nodes = 1
