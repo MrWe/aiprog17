@@ -1,6 +1,6 @@
 from util import get_all_neighbours, has_won
 import lists
-
+#Astar is fun
 
 def a_star(board, start_node):
     generated_nodes = 1
@@ -30,6 +30,7 @@ def a_star(board, start_node):
 
             elif neighbour_g >= neighbour.get_g(): #Not an augmenting path
                 continue
+
 
             #Wow we found a great new node with an augmenting path
             neighbour.parent = current_node

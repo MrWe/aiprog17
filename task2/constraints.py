@@ -37,27 +37,35 @@ def validate_alphabetical_order(row):
 
 def validate_space_between_elements(row):
     current = None
-
+    last_char = None
     for item in row:
         if item == '' and current == None:
+            last_char = item
             continue
         if item == 'A' and current == None:
             current = ord('A')
+            last_char = item
             continue
-
         if item == chr(current):
+            last_char = item
             continue
-        elif item == '':
+        elif item == '' and last_char != '':
             current += 1
         elif item == chr(current-1):
             return False
         else:
             return False
+        last_char = item
+
     return True
 
+def validate_row_col(row_item, col_item):
+    return row_item == col_item;
 
-#row = ["A", "","A","","",""]
-#print(validate_space_between_elements(row))
+
+
+row = ('A', '', '', 'B', '', 'C', '')
+print(validate_space_between_elements(row))
 
 # Ensure that it is a space between any segment A and B
 c1 = makefunc(['x','y','z'], 'x+y < z') #x = start(a), y= len(a), z = start(b)
