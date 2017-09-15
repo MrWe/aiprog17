@@ -3,6 +3,7 @@ import time
 import sys
 import constraints
 import node
+import itertools
 
 #Write only filename to choose board
 if len(sys.argv) > 1:
@@ -30,6 +31,19 @@ def main():
   for col_node in col_nodes:
       col_node.domain = constraints.reduce_domain(col_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
 
+  '''
+  for i in col_nodes:
+    for j in i.domain:
+      print(j)
+    print("\n")
+
+
+
+  for n in col_nodes:
+    for k in list(itertools.zip_longest(*n.domain)):
+      print(k)
+    print("\n")
+  '''
 
 def read_board(name):
   string_board = ""
