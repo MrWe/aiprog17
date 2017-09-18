@@ -16,6 +16,8 @@ def main():
   #initialize empty board
   rows, columns = read_board(in_file)
 
+  #print(rows)
+
   row_nodes = []
   col_nodes = []
 
