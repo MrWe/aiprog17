@@ -15,6 +15,17 @@ def reduce_domain(domain, constraints):
                 new_domain.remove(domain[i])
     return new_domain
 
+def reduce_domains(domains, constraints):
+    #print("DOMAINS:", domains)
+    new_domains = []
+    for domain in domains:
+        for constraint in constraints:
+            new_domain = reduce_domain(domain, constraints)
+            #print("NEW DOMAIN", new_domain)
+            new_domains.append(new_domain)
+    #print("NEW DOMAINS:", new_domains)
+    return new_domains
+
 def makefunc(names , expression , envir=globals()):
     args = ','.join(names) # eg [’x’,’y’,’z’] => ’x,y,z’
     return eval("(lambda " + args + ": " + expression + ")" , envir)
@@ -36,27 +47,18 @@ def validate_alphabetical_order(row):
     return True
 
 def validate_space_between_elements(row):
-    current = None
-
-    for item in row:
-        if item == '' and current == None:
+    for i in range(1,len(row)):
+        if row[i] == '':
             continue
-        if item == 'A' and current == None:
-            current = ord('A')
-            continue
-
-        if item == chr(current):
-            continue
-        elif item == '':
-            current += 1
-        elif item == chr(current-1):
-            return False
-        else:
-            return False
+        elif row[i] != '':
+            if row[i-1] == '' or row[i-1] == row[i]:
+                continue
+            else:
+                return False
     return True
 
 def validate_row_col(row, col, row_index, col_index):
-    return row[col_index] == col[row_index]
+    return row.domain[0][col_index] == col.domain[0][row_index]
 
 
 #row = ["", "A","","","","B"]

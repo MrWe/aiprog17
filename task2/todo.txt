@@ -5,6 +5,9 @@
   c. No segments must create a conflict between a row and a column DONE
     i.  Implement validate_row_state()
     ii. Implement detect_conflict(row, col)
+    iii. Remove entries in domain if NO possible values in other axis domain satisfy the value
+      Eksempel: Få inn domainet ("A", "", ""), ("", "A", ""), ("", "", "A")
+      Hvis ingen kolonner som har index 0 begynner på A, fjern første element i domainet
 2. Implement preprocessing of data DONE
   a. Generate all possible states (domain) for a row
 3. Implement method for eliminating invalid states from the domain DONE
