@@ -47,18 +47,29 @@ def validate_alphabetical_order(row):
     return True
 
 def validate_space_between_elements(row):
+    seen = []
     for i in range(1,len(row)):
-        if row[i] == '':
+        if row[i] == '' or row[i] in seen:
             continue
-        elif row[i] != '':
-            if row[i-1] == '' or row[i-1] == row[i]:
-                continue
-            else:
-                return False
+        seen.append(row[i])
+        num = row.count(row[i])
+        if(not (len(row) - 1 - row[::-1].index(row[i]) - row.index(row[i])+1) == num):
+            return False
+        if row[i-1] == '' or row[i-1] == row[i]:
+            continue
+        else:
+            return False
     return True
 
 def validate_row_col(row, col, row_index, col_index):
-    return row.domain[0][col_index] == col.domain[0][row_index]
+    
+    if(row[col_index] == col[row_index]):
+        return True
+    if(row[col_index] != '' and col[row_index] != ''):
+        return True
+    return False
+
+    #return row[col_index] == col[row_index]
 
 
 #row = ["", "A","","","","B"]

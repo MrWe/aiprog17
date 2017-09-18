@@ -34,24 +34,23 @@ def main():
   for i in range(len(row_nodes)):
 
       for j in range(len(row_nodes[i].domain)):
-          print(row_nodes[i].domain[j])
 
           for k in range(len(col_nodes)):
 
               row_must_be_deleted = True
               for l in range(len(col_nodes[k].domain)):
 
-
-                  if constraints.validate_row_col(row_nodes[i].domain[j], col_nodes[k].domain[l], j, l):
+                  if constraints.validate_row_col(row_nodes[i].domain[j], col_nodes[k].domain[l], i, k):
                       row_must_be_deleted = False
                       break
       if row_must_be_deleted:
-          row_nodes[i].domain.remove(row_nodes[i].domain[j]])
+          row_nodes[i].domain.remove(row_nodes[i].domain[j])
 
         #[row_nodes[i].domain, col_nodes[j].domain] = constraints.reduce_domains([row_nodes[i].domain, col_nodes[j].domain], [constraints.validate_row_col(row_nodes[i], col_nodes[j], i, j)])
 
   for row_node in row_nodes:
       print("ROW NODE DOMAIN:", row_node.domain)
+  print("\n")
   for col_node in col_nodes:
       print("COL NODE DOMAIN:", col_node.domain)
 
