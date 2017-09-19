@@ -36,11 +36,14 @@ def main():
   for col_node in col_nodes:
       col_node.domain = constraints.reduce_domain(col_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
 
+<<<<<<< HEAD
+=======
   for k in row_nodes:
     print(len(k.domain))
 
 
 
+>>>>>>> master
 def read_board(name):
   string_board = ""
   file = open(name)
