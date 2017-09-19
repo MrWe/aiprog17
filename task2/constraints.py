@@ -26,20 +26,37 @@ def intersect_constraint(nodes_which_we_can_possibly_delete, nodes_which_we_chec
     c_nodes = nodes_which_we_check_against
 
     for i in range(len(d_nodes)):
-        for j in range(len(d_nodes[i].domain)):
-            for k in range(len(c_nodes)):
+        for j in range(len(d_nodes[i].domain)-1, -1, -1):
+            valid_hits = [False] * len(d_nodes[0].domain[0])
+            for m in range(len(d_nodes[i].domain[j])):
+                #print(len(d_nodes[0].domain))
 
-                row_must_be_deleted = True
-                for l in range(len(c_nodes[k].domain)):
+                #print(d_nodes[i].domain[j][m])
 
-                    if validate_intersect(d_nodes[i].domain[j], c_nodes[k].domain[l], i, k):
-                        row_must_be_deleted = False
-                        break
+                for l in range(len(c_nodes[m].domain)):
 
-        if row_must_be_deleted:
-            print("Removed a row")
-            changed_something = True
-            d_nodes[i].domain.remove(d_nodes[i].domain[j])
+                    #print(c_nodes[m].domain[l][i], end='')
+
+                    if validate_intersect(d_nodes[i].domain[j][m], c_nodes[m].domain[l][i]):
+                        #print("Intersect on row line", i, "in domain", j, "at index", m, "=", d_nodes[i].domain[j][m], "equaled c_node", k, "at domain", l, "on index", i)
+                        valid_hits[m] = True
+                    #if valid_hits[l]:
+                    #    break
+                    #print("\n")
+                #print(valid_hits)
+                #print("\n")
+
+            #print(valid_hits)
+            for hit in valid_hits:
+                if not hit:
+                    #print("Removed a row", j)
+
+                    #for row in d_nodes[i].domain:
+                        #print(row)
+
+
+                    del d_nodes[i].domain[j]
+                    break
 
     return(d_nodes, changed_something)
 
@@ -82,10 +99,10 @@ def super_constrainty(nodes_which_we_can_possibly_prune, nodes_which_we_check_ag
 
     return new_nodes, hasChanged
 
-def validate_intersect(row, col, row_index, col_index):
+def validate_intersect(row, col):
     #print("Row", row_index)
     #print("Col", col_index)
     #print(row[col_index] == col[row_index])
     #print("\n")
-    return row[col_index] == col[row_index]
+    return row == col
 
