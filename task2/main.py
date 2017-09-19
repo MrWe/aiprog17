@@ -2,7 +2,7 @@ import csp
 import time
 import sys
 import constraints
-import node
+import node3
 
 #Write only filename to choose board
 if len(sys.argv) > 1:
@@ -21,17 +21,25 @@ def main():
   row_nodes = []
   col_nodes = []
 
+
+
   for row in rows:
-      row_nodes.append(node.Node(len(columns), row))
+    row_nodes.append(node3.Node(len(columns), row))
+
   for column in columns:
-      col_nodes.append(node.Node(len(rows), column))
+      col_nodes.append(node3.Node(len(rows), column))
 
-
+  '''
   for row_node in row_nodes:
       row_node.domain = constraints.reduce_domain(row_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
+
   for col_node in col_nodes:
       col_node.domain = constraints.reduce_domain(col_node.domain, [constraints.validate_alphabetical_order, constraints.validate_space_between_elements])
 
+  for k in row_nodes:
+    print(len(k.domain))
+
+  '''
 
 def read_board(name):
   string_board = ""
