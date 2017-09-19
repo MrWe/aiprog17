@@ -66,6 +66,21 @@ def filter_on_specific_elements(element, value, domain_that_can_possibly_be_redu
 
     return new_domain
 
+def super_constrainty(nodes_which_we_can_possibly_prune, nodes_which_we_check_against):
+    new_nodes = nodes_which_we_can_possibly_prune
+    for i in range(len(nodes_which_we_check_against)):
+        common_elements = common_element(nodes_which_we_check_against[i])
+
+        for element in common_elements:
+            new_nodes[element].domain = filter_on_specific_elements(element, common_elements[element], nodes_which_we_can_possibly_prune[element], i)
+
+    hasChanged = False
+    for i in range(len(new_nodes)):
+        if new_nodes[i].__dict__ != nodes_which_we_can_possibly_prune[i].__dict__:
+            hasChanged = True
+            break
+
+    return new_nodes, hasChanged
 
 def validate_row_col(row, col, row_index, col_index):
     #print("Row", row_index)

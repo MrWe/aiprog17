@@ -31,11 +31,20 @@ def main():
   # Constraints regarding combinations of rows
   #print(constraints.constrainty(row_nodes, col_nodes))
   #print(constraints.constrainty(col_nodes, row_nodes))
-  for i in range(len(col_nodes)):
-      common_element = constraints.common_element(col_nodes[i])
 
-      for element in common_element:
-          row_nodes[element].domain = constraints.filter_on_specific_elements(element, common_element[element], row_nodes[element], i)
+
+  colHasChanged = True
+  rowHasChanged = True
+  while colHasChanged or rowHasChanged:
+      col_nodes, colHasChanged = constraints.super_constrainty(col_nodes, row_nodes)
+      row_nodes, rowHasChanged = constraints.super_constrainty(row_nodes, col_nodes)
+
+  print("ROW NODES")
+  for row in row_nodes:
+      print(row.domain)
+  print("COL NODES")
+  for col in col_nodes:
+      print(col.domain)
 
 def read_board(name):
   string_board = ""
