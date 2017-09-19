@@ -7,55 +7,61 @@ class Node:
         self.requirement = requirement
         self.heuristic = 0
         self.domain = self.create_permutations(length, requirement)
+        self.duplicates = 0
 
     #Create all permutations of elements in requirement and add them to the domain
     def create_permutations(self, length, requirement):
 
+        num_duplicates = 0
+        for i in requirement:
+            num_duplicates += i-1
+        self.duplicates = num_duplicates
         start_pos = 0
-        temp = list(self.init_domain(length, requirement, start_pos))
+        temp = self.init_domain(length, requirement, start_pos)
+
         domain = []
-        domain.append(list(temp))
+        domain.append(list(itertools.chain(*temp)))
+        original = list(temp)
 
-
-
-        for i in range(length - sum(requirement)-1):
+        for n in range(length-sum(requirement)):
             index = 0
-
-            for j in range(sum(requirement)-1+i, -1, -1):
-                if(requirement[0] == length):
+            temp = list(original)
+            for element in range(len(temp)-1, -1, -1):
+                if(temp[element] == ' '):
                     continue
-                requirement_index = 0
-                for h in range(j+1,len(temp)-index):
+                for i in range(element+1, len(temp)-index):
+                    char = temp[i-1]
+                    temp[i-1] = ' '
+                    temp[i] = char
+                    domain.append(list(itertools.chain(*temp)))
 
-
-                    char = temp[h-1]
-                    temp[h-1] = ''
-                    temp[h] = char
-
-                    domain.append(list(temp))
-                    requirement_index += 1
                 index += 1
             start_pos += 1
-            #temp = list(self.init_domain(length, requirement, start_pos))
-            temp = list([temp[-1]] + temp[:-1])
-            domain.append(list(temp))
-        del domain[-1]
-
+            original = list(self.move_elements(list(original)))
+            temp = list(original)
+            domain.append(list(itertools.chain(*temp)))
+        '''
         for n in domain:
             print(n)
         print("\n")
-
-        #domain = list(set(itertools.permutations(domain)))
-
+        '''
         return domain
 
 
+    def move_elements(self, original):
+        return [original[-1]] + original[:-1]
 
-    def init_domain(self, length, requirement, index):
-        temp = ['']*(length)
+
+
+    def init_domain(self, length, requirement, index=0):
+
+        temp = [' ']*(length-self.duplicates)
 
         for i in range(len(requirement)):
+            group = []
             for k in range(requirement[i]):
-                temp[index] = chr(65+i)
-                index += 1
+                group.append(chr(65+i))
+            temp[index] = list(group)
+            index += 1
+
         return temp
