@@ -32,8 +32,8 @@ def main():
       colHasChanged = True
       rowHasChanged = True
       while colHasChanged or rowHasChanged:
-          col_nodes, colHasChanged = constraints.super_constrainty(col_nodes, row_nodes)
-          row_nodes, rowHasChanged = constraints.super_constrainty(row_nodes, col_nodes)
+          col_nodes, colHasChanged = constraints.common_elements_constraint(col_nodes, row_nodes)
+          row_nodes, rowHasChanged = constraints.common_elements_constraint(row_nodes, col_nodes)
 
 
       colHasChanged = True
@@ -41,22 +41,19 @@ def main():
       while colHasChanged or rowHasChanged:
         row_nodes, rowHasChanged = constraints.intersect_constraint(row_nodes, col_nodes)
         col_nodes, colHasChanged = constraints.intersect_constraint(col_nodes, row_nodes)
-        #print(rowHasChanged, colHasChanged)
 
       colHasChanged = True
       rowHasChanged = True
       while colHasChanged or rowHasChanged:
-          col_nodes, colHasChanged = constraints.super_constrainty(col_nodes, row_nodes)
-          row_nodes, rowHasChanged = constraints.super_constrainty(row_nodes, col_nodes)
+          col_nodes, colHasChanged = constraints.common_elements_constraint(col_nodes, row_nodes)
+          row_nodes, rowHasChanged = constraints.common_elements_constraint(row_nodes, col_nodes)
 
+  display_ascii_image(row_nodes)
 
-
+def display_ascii_image(row_nodes):
   print("ROW NODES")
   for row in row_nodes:
       print(row.domain)
-  print("COL NODES")
-  for col in col_nodes:
-      print(col.domain)
 
 def read_board(name):
   string_board = ""

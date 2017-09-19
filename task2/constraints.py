@@ -28,39 +28,22 @@ def intersect_constraint(nodes_which_we_can_possibly_delete, nodes_which_we_chec
     for i in range(len(d_nodes)):
         for j in range(len(d_nodes[i].domain)-1, -1, -1):
             valid_hits = [False] * len(d_nodes[0].domain[0])
+
             for m in range(len(d_nodes[i].domain[j])):
-                #print(len(d_nodes[0].domain))
-
-                #print(d_nodes[i].domain[j][m])
-
                 for l in range(len(c_nodes[m].domain)):
-
-                    #print(c_nodes[m].domain[l][i], end='')
 
                     if validate_intersect(d_nodes[i].domain[j][m], c_nodes[m].domain[l][i]):
                         #print("Intersect on row line", i, "in domain", j, "at index", m, "=", d_nodes[i].domain[j][m], "equaled c_node", k, "at domain", l, "on index", i)
                         valid_hits[m] = True
-                    #if valid_hits[l]:
-                    #    break
-                    #print("\n")
-                #print(valid_hits)
-                #print("\n")
 
-            #print(valid_hits)
             for hit in valid_hits:
                 if not hit:
-                    #print("Removed a row", j)
-
-                    #for row in d_nodes[i].domain:
-                        #print(row)
-
-
                     del d_nodes[i].domain[j]
                     break
 
     return(d_nodes, changed_something)
 
-def common_element(node):
+def find_common_elements(node):
     common_elements = {}
 
     for i in range(len(node.domain[0])):
@@ -83,10 +66,10 @@ def filter_on_specific_elements(element, value, domain_that_can_possibly_be_redu
 
     return new_domain
 
-def super_constrainty(nodes_which_we_can_possibly_prune, nodes_which_we_check_against):
+def common_elements_constraint(nodes_which_we_can_possibly_prune, nodes_which_we_check_against):
     new_nodes = nodes_which_we_can_possibly_prune
     for i in range(len(nodes_which_we_check_against)):
-        common_elements = common_element(nodes_which_we_check_against[i])
+        common_elements = find_common_elements(nodes_which_we_check_against[i])
 
         for element in common_elements:
             new_nodes[element].domain = filter_on_specific_elements(element, common_elements[element], nodes_which_we_can_possibly_prune[element], i)
@@ -99,10 +82,5 @@ def super_constrainty(nodes_which_we_can_possibly_prune, nodes_which_we_check_ag
 
     return new_nodes, hasChanged
 
-def validate_intersect(row, col):
-    #print("Row", row_index)
-    #print("Col", col_index)
-    #print(row[col_index] == col[row_index])
-    #print("\n")
-    return row == col
-
+def validate_intersect(row_value, col_value):
+    return row_value == col_value

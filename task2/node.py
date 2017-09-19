@@ -9,7 +9,8 @@ class Node:
         self.domain = self.generate_domain(length, requirement)
         self.duplicates = 0
 
-    #Create all permutations of elements in requirement and add them to the domain
+    # Create all legal permutations of elements in requirement and add them to the domain
+    # Implicit requirements: Pieces stick together and are separated by one or more spaces
     def generate_domain(self, length, requirement):
         # generate minimum placement
         domain = []
