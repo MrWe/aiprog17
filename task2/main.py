@@ -50,13 +50,15 @@ def main():
           row_nodes, rowHasChanged = constraints.super_constrainty(row_nodes, col_nodes)
 
 
-
+  '''
   print("ROW NODES")
   for row in row_nodes:
       print(row.domain)
   print("COL NODES")
   for col in col_nodes:
       print(col.domain)
+  '''
+  return row_nodes
 
 def read_board(name):
   string_board = ""
@@ -76,5 +78,3 @@ def read_board(name):
       columns[j][i] = int(columns[j][i])
   #list(reversed(rows)) Do we need this?
   return rows, columns
-
-main()
