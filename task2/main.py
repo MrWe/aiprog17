@@ -50,12 +50,12 @@ def main():
 
   display_ascii_image(row_nodes)
 
+  return row_nodes
+
 def display_ascii_image(row_nodes):
   print("ROW NODES")
   for row in row_nodes:
       print(row.domain)
-
-  return row_nodes
 
 def read_board(name):
   string_board = ""
