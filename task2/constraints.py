@@ -27,7 +27,7 @@ def intersect_row_col(row, col, index):
 def validate_alphabetical_order(row):
     biggest = chr(0)
     for item in row:
-        if item == "":
+        if item == " ":
             continue
         elif item >= biggest:
             biggest = item
@@ -39,7 +39,7 @@ def validate_space_between_elements(row):
     current = None
 
     for item in row:
-        if item == '' and current == None:
+        if item == ' ' and current == None:
             continue
         if item == 'A' and current == None:
             current = ord('A')
@@ -47,7 +47,7 @@ def validate_space_between_elements(row):
 
         if item == chr(current):
             continue
-        elif item == '':
+        elif item == ' ':
             current += 1
         elif item == chr(current-1):
             return False
