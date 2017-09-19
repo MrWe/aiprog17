@@ -19,20 +19,20 @@ def makefunc(names , expression , envir=globals()):
     args = ','.join(names) # eg [’x’,’y’,’z’] => ’x,y,z’
     return eval("(lambda " + args + ": " + expression + ")" , envir)
 
-def constrainty(nodes_which_we_can_possibly_delete, nodes_which_we_check_against):
+def intersect_constraint(nodes_which_we_can_possibly_delete, nodes_which_we_check_against):
     row_must_be_deleted = None
     changed_something = False
     d_nodes = nodes_which_we_can_possibly_delete
     c_nodes = nodes_which_we_check_against
-    for i in range(len(d_nodes)):
 
+    for i in range(len(d_nodes)):
         for j in range(len(d_nodes[i].domain)):
             for k in range(len(c_nodes)):
 
                 row_must_be_deleted = True
                 for l in range(len(c_nodes[k].domain)):
 
-                    if validate_row_col(d_nodes[i].domain[j], c_nodes[k].domain[l], i, k):
+                    if validate_intersect(d_nodes[i].domain[j], c_nodes[k].domain[l], i, k):
                         row_must_be_deleted = False
                         break
 
@@ -82,7 +82,7 @@ def super_constrainty(nodes_which_we_can_possibly_prune, nodes_which_we_check_ag
 
     return new_nodes, hasChanged
 
-def validate_row_col(row, col, row_index, col_index):
+def validate_intersect(row, col, row_index, col_index):
     #print("Row", row_index)
     #print("Col", col_index)
     #print(row[col_index] == col[row_index])

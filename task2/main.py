@@ -27,17 +27,25 @@ def main():
   for column in columns:
       col_nodes.append(node.Node(len(rows), column))
 
-
-  # Constraints regarding combinations of rows
-  #print(constraints.constrainty(row_nodes, col_nodes))
-  #print(constraints.constrainty(col_nodes, row_nodes))
-
-
   colHasChanged = True
   rowHasChanged = True
   while colHasChanged or rowHasChanged:
       col_nodes, colHasChanged = constraints.super_constrainty(col_nodes, row_nodes)
       row_nodes, rowHasChanged = constraints.super_constrainty(row_nodes, col_nodes)
+
+  print("ROW NODES")
+  for row in row_nodes:
+      print(row.domain)
+  print("COL NODES")
+  for col in col_nodes:
+      print(col.domain)
+
+  colHasChanged = True
+  rowHasChanged = True
+  while colHasChanged or rowHasChanged:
+    row_nodes, rowHasChanged = constraints.intersect_constraint(row_nodes, col_nodes)
+    col_nodes, colHasChanged = constraints.intersect_constraint(col_nodes, row_nodes)
+    print(rowHasChanged, colHasChanged)
 
   print("ROW NODES")
   for row in row_nodes:
