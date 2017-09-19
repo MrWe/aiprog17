@@ -55,6 +55,8 @@ def display_ascii_image(row_nodes):
   for row in row_nodes:
       print(row.domain)
 
+  return row_nodes
+
 def read_board(name):
   string_board = ""
   file = open(name)
@@ -73,5 +75,3 @@ def read_board(name):
       columns[j][i] = int(columns[j][i])
   #list(reversed(rows)) Do we need this?
   return rows, columns
-
-main()
