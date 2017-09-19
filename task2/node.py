@@ -6,45 +6,32 @@ class Node:
         self.length = length
         self.requirement = requirement
         self.heuristic = 0
-        self.domain = self.create_permutations(length, requirement)
+        self.domain = self.generate_domain(length, requirement)
         self.duplicates = 0
 
     #Create all permutations of elements in requirement and add them to the domain
-    def create_permutations(self, length, requirement):
-
-        num_duplicates = 0
-        for i in requirement:
-            num_duplicates += i-1
-        self.duplicates = num_duplicates
-        start_pos = 0
-        temp = self.init_domain(length, requirement, start_pos)
-
+    def generate_domain(self, length, requirement):
+        # generate minimum placement
         domain = []
-        domain.append(list(itertools.chain(*temp)))
-        original = list(temp)
+        min_placement = []
+        for s in requirement:
+            for i in range(s):
+                min_placement.append(1)
+            min_placement.append(0)
+        min_placement.pop(len(min_placement) - 1)
 
-        for n in range(length-sum(requirement)):
-            index = 0
-            temp = list(original)
-            for element in range(len(temp)-1, -1, -1):
-                if(temp[element] == ' '):
-                    continue
-                for i in range(element+1, len(temp)-index):
-                    char = temp[i-1]
-                    temp[i-1] = ' '
-                    temp[i] = char
-                    domain.append(list(itertools.chain(*temp)))
-
-                index += 1
-            start_pos += 1
-            original = list(self.move_elements(list(original)))
-            temp = list(original)
-            domain.append(list(itertools.chain(*temp)))
-        '''
-        for n in domain:
-            print(n)
-        print("\n")
-        '''
+        insert_indices = [i + 1 for i, x in enumerate(min_placement) if x == 0]
+        insert_indices.extend([0, len(min_placement)])
+        combinations = itertools.combinations_with_replacement(insert_indices, length - len(min_placement))
+        for c in combinations:
+            result = min_placement[:]
+            insert_positions = list(c)
+            insert_positions.sort()
+            offset = 0
+            for index in insert_positions:
+                result.insert(index + offset, 0)
+                offset += 1
+            domain.append(result)
         return domain
 
 
