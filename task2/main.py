@@ -15,7 +15,7 @@ else:
 def main():
   #initialize empty board
   rows, columns = read_board(in_file)
-
+  rows = list(reversed(rows))
   #print(rows)
 
   row_nodes = []
@@ -29,10 +29,13 @@ def main():
 
 
   # Constraints regarding combinations of rows
-  print(constraints.constrainty(row_nodes, col_nodes))
-  print(constraints.constrainty(col_nodes, row_nodes))
+  #print(constraints.constrainty(row_nodes, col_nodes))
+  #print(constraints.constrainty(col_nodes, row_nodes))
+  for i in range(len(col_nodes)):
+      common_element = constraints.common_element(col_nodes[i])
 
-
+      for element in common_element:
+          row_nodes[element].domain = constraints.filter_on_specific_elements(element, common_element[element], row_nodes[element], i)
 
 def read_board(name):
   string_board = ""

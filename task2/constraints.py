@@ -43,6 +43,30 @@ def constrainty(nodes_which_we_can_possibly_delete, nodes_which_we_check_against
 
     return(d_nodes, changed_something)
 
+def common_element(node):
+    common_elements = {}
+
+    for i in range(len(node.domain[0])):
+        first_element = node.domain[0][0]
+
+        for row in node.domain:
+            if not row[i] == first_element:
+                first_element = None
+        if first_element != None:
+            common_elements[i] = first_element
+
+    return common_elements
+
+def filter_on_specific_elements(element, value, domain_that_can_possibly_be_reduced, row_index):
+    new_domain = []
+
+    for domain in domain_that_can_possibly_be_reduced.domain:
+        if domain[row_index] == value and domain not in new_domain:
+            new_domain.append(domain)
+
+    return new_domain
+
+
 def validate_row_col(row, col, row_index, col_index):
     #print("Row", row_index)
     #print("Col", col_index)
