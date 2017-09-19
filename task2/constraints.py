@@ -1,23 +1,11 @@
 import itertools
 import node
 
-def revise(row, constraint):
-    for i in range(len(row)-1):
-        if not constraint(row):
-            return True
-    return False
+def revise(row_nodes, col_nodes, function):
+      col_nodes, colHasChanged = function(col_nodes, row_nodes)
+      row_nodes, rowHasChanged = function(row_nodes, col_nodes)
 
-def reduce_domain(domain, constraints):
-    new_domain = domain
-    for constraint in constraints:
-        for i in range(len(domain)-1,-1,-1):
-            if revise(domain[i], constraint):
-                new_domain.remove(domain[i])
-    return new_domain
-
-def makefunc(names , expression , envir=globals()):
-    args = ','.join(names) # eg [’x’,’y’,’z’] => ’x,y,z’
-    return eval("(lambda " + args + ": " + expression + ")" , envir)
+      return row_nodes, col_nodes, colHasChanged, rowHasChanged
 
 def intersect_constraint(nodes_which_we_can_possibly_delete, nodes_which_we_check_against):
     row_must_be_deleted = None
@@ -39,6 +27,7 @@ def intersect_constraint(nodes_which_we_can_possibly_delete, nodes_which_we_chec
             for hit in valid_hits:
                 if not hit:
                     del d_nodes[i].domain[j]
+                    changed_something = True
                     break
 
     return(d_nodes, changed_something)
@@ -59,26 +48,27 @@ def find_common_elements(node):
 
 def filter_on_specific_elements(element, value, domain_that_can_possibly_be_reduced, row_index):
     new_domain = []
+    changed_something = False
 
     for domain in domain_that_can_possibly_be_reduced.domain:
         if domain[row_index] == value and domain not in new_domain:
             new_domain.append(domain)
+        else:
+            changed_something = True
 
-    return new_domain
+    return new_domain, changed_something
 
 def common_elements_constraint(nodes_which_we_can_possibly_prune, nodes_which_we_check_against):
-    new_nodes = nodes_which_we_can_possibly_prune
+    new_nodes = list(nodes_which_we_can_possibly_prune)
+    hasChanged = False
+
     for i in range(len(nodes_which_we_check_against)):
         common_elements = find_common_elements(nodes_which_we_check_against[i])
 
         for element in common_elements:
-            new_nodes[element].domain = filter_on_specific_elements(element, common_elements[element], nodes_which_we_can_possibly_prune[element], i)
-
-    hasChanged = False
-    for i in range(len(new_nodes)):
-        if new_nodes[i].__dict__ != nodes_which_we_can_possibly_prune[i].__dict__:
-            hasChanged = True
-            break
+            new_nodes[element].domain, domainHasChanged = filter_on_specific_elements(element, common_elements[element], nodes_which_we_can_possibly_prune[element], i)
+            if domainHasChanged:
+                hasChanged = True
 
     return new_nodes, hasChanged
 

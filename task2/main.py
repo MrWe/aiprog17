@@ -3,6 +3,7 @@ import time
 import sys
 import constraints
 import node
+import time
 
 #Write only filename to choose board
 if len(sys.argv) > 1:
@@ -10,14 +11,12 @@ if len(sys.argv) > 1:
 else:
     in_file = "boards/hut.txt"
 
-
-
 def main():
   #initialize empty board
   rows, columns = read_board(in_file)
   rows = list(reversed(rows))
-  #print(rows)
 
+  t0 = time.time()
   row_nodes = []
   col_nodes = []
 
@@ -27,30 +26,33 @@ def main():
   for column in columns:
       col_nodes.append(node.Node(len(rows), column))
 
+  todo_revise = []
+  todo_revise.insert(0, constraints.common_elements_constraint)
+  todo_revise.insert(0, constraints.intersect_constraint)
 
-  for i in range(100):
-      colHasChanged = True
-      rowHasChanged = True
-      while colHasChanged or rowHasChanged:
-          col_nodes, colHasChanged = constraints.common_elements_constraint(col_nodes, row_nodes)
-          row_nodes, rowHasChanged = constraints.common_elements_constraint(row_nodes, col_nodes)
+  while todo_revise:
+    function = todo_revise.pop()
+    row_nodes, col_nodes, colHasChanged, rowHasChanged = constraints.revise(row_nodes, col_nodes, function)
 
+    if colHasChanged or rowHasChanged:
+        todo_revise.insert(0, function)
 
-      colHasChanged = True
-      rowHasChanged = True
-      while colHasChanged or rowHasChanged:
-        row_nodes, rowHasChanged = constraints.intersect_constraint(row_nodes, col_nodes)
-        col_nodes, colHasChanged = constraints.intersect_constraint(col_nodes, row_nodes)
-
-      colHasChanged = True
-      rowHasChanged = True
-      while colHasChanged or rowHasChanged:
-          col_nodes, colHasChanged = constraints.common_elements_constraint(col_nodes, row_nodes)
-          row_nodes, rowHasChanged = constraints.common_elements_constraint(row_nodes, col_nodes)
+  if not is_finished(row_nodes, col_nodes):
+      print("No finish :(")
 
   display_ascii_image(row_nodes)
-
+  t1 = time.time()
+  print(t1-t0)
   return row_nodes
+
+def is_finished(row_nodes, col_nodes):
+    for node in row_nodes:
+        if len(node.domain) != 1:
+            return False
+    for node in col_nodes:
+        if len(node.domain) != 1:
+            return False
+    return True
 
 def display_ascii_image(row_nodes):
   print("ROW NODES")
@@ -75,3 +77,5 @@ def read_board(name):
       columns[j][i] = int(columns[j][i])
   #list(reversed(rows)) Do we need this?
   return rows, columns
+
+main()
