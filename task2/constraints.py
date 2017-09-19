@@ -27,7 +27,7 @@ def intersect_row_col(row, col, index):
 def validate_alphabetical_order(row):
     biggest = chr(0)
     for item in row:
-        if item == "":
+        if item == " ":
             continue
         elif item >= biggest:
             biggest = item
@@ -50,8 +50,13 @@ def validate_space_between_elements(row):
             return False
     return True
 
-#row = ["A","A","","","",""]
-#print(validate_space_between_elements(row))
+def validate_row_col(row, col, row_index, col_index):
+    return row[col_index] == col[row_index]
+
+
+#row = ["", "A","","","","B"]
+#col = ["", "","","","A",""]
+#print(validate_row_col(row, col, 4, 1))
 
 # Ensure that it is a space between any segment A and B
 c1 = makefunc(['x','y','z'], 'x+y < z') #x = start(a), y= len(a), z = start(b)
