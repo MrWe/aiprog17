@@ -21,18 +21,18 @@ def main():
   row_nodes = []
   col_nodes = []
 
-
-
   for row in rows:
     row_nodes.append(node.Node(len(columns), row))
 
   for column in columns:
       col_nodes.append(node.Node(len(rows), column))
 
-  for k in row_nodes:
-      print("\n")
-      for l in k.domain:
-          print(l)
+
+  # Constraints regarding combinations of rows
+  print(constraints.constrainty(row_nodes, col_nodes))
+  print(constraints.constrainty(col_nodes, row_nodes))
+
+
 
 def read_board(name):
   string_board = ""
