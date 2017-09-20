@@ -40,7 +40,7 @@ class Node:
         return [original[-1]] + original[:-1]
 
     def set_h(self):
-        self.heuristic = (len(self.domain) - 1) * self.length
+        self.heuristic = (len(self.domain) - 1)
 
     def init_domain(self, length, requirement, index=0):
 
