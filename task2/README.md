@@ -38,12 +38,14 @@ The two constraints were applied in the order presented above (although in a loo
 
 ## Heuristics
 Explains the heuristics used for this problem. Note that heuristics appear in at least two places in A*-GSP: a) in A*’s traditional h function, and b) in the choice of a variable on which to base the next assumption. Both (and others, if relevant) should be mentioned in the report.
-
+Two different heuristics are used in the solving of an A*-CSP, and they can be found in a _node_ and a _state node_, respectively (these two nodes are described in more detail in Methods).
+1. **Node heuristic**. Used in the general GAC. A node referring to a single row or column has the heuristic ```len(self.domain) - 1```. The desired effect here is to indicate that rows with a domain of length ```1``` has concluded in the search for a domain and we will no longer do any work on it.
+2. **Node state heuristic**. Introduced along with A*. As each node state includes representations of all row and column nodes, the node state uses the _summed heuristic of all nodes' heuristics_. As we make assumptions in nodes in the state, the results discovered in the node are then reflected in this node state heuristic.
 
 ## Methods
 1. **node.py**. Nodes in this program refer to a single row or column, with each nodes domain being all possible values for that row/column, both valid and invalid.
-2. **state_node.py**. When astar is needed to complete a board, the program generates a state given the set of pruned column-nodes and row-nodes. Each state contains one or many representations of an entire board, both valid and invalid.
+2. **state_node.py**. When A* is needed to complete a board, the program generates a state given the set of pruned column-nodes and row-nodes. Each state contains one or many representations of an entire board, both valid and invalid.
 3. **constraints.py**. The constraints file contain the revise*-method. All calls to constraints from this method are made to problem-specific methods which will not work for other problems.
 
 ### Other design decisions
-Mentions any other design decisions that are, in your mind, critical to getting the system to perform well.
+Not many other design decisions were made which significantly changed the architecture of the problem. However, it may be worth to mention that the input structure was changed. In the given task, the rows are counted from the _bottom up_. In order to make the row indexing communicate more nicely with Python indexing, the counting of rows were flipped so that it was iterating from the _top down_. The rationale for this decision mainly consisted of making the problem representation more intuitive and consistent with the programming language that was used.
