@@ -6,16 +6,23 @@ class StateNode:
         self.parent = parent
         self.g = g
         self.f = self.heuristic + self.g
-
-        for row_node in row_nodes:
-            #print(row_node.domain)
-            pass
-        #print("\n")
-
         self.set_h()
+        self.hash = self.generate_hash()
 
     def __lt__(self, other):
         return self.f < other.f
+
+    def __eq__(self, other):
+        return self.hash == other.hash
+
+
+    def generate_hash(self):
+        hashString = ""
+        for n in self.row_nodes:
+            hashString += str(n.__dict__)
+        for p in self.col_nodes:
+            hashString += str(p.__dict__)
+        return hashString
 
     def set_h(self):
         h = 0

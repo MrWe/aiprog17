@@ -3,6 +3,7 @@ import lists
 
 
 def a_star(start_node):
+    expanded_nodes = 0
     generated_nodes = 1
 
     open_list = lists.OpenList()
@@ -14,10 +15,11 @@ def a_star(start_node):
 
         if has_won(current_node):
             print("Solution found! Nodes generated:", generated_nodes)
+            print("Nodes expanded:", expanded_nodes)
             return current_node
 
         closed_list.push(current_node)
-        generated_nodes += 1
+        expanded_nodes += 1
 
         for neighbour in get_all_neighbours(current_node):
             if closed_list.contains(neighbour):
@@ -27,6 +29,8 @@ def a_star(start_node):
 
             if not open_list.contains(neighbour):
                 open_list.push(neighbour)
+                generated_nodes += 1
+
 
             elif neighbour_g >= neighbour.get_g(): #Not an augmenting path
                 continue

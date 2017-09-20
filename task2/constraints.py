@@ -84,7 +84,7 @@ def revise(row_nodes, col_nodes):
         row_nodes, rowHasChanged = function(row_nodes, col_nodes)
 
         for node in row_nodes:
-            
+
             if(len(node.domain) == 0):
                 raise IndexError()
 

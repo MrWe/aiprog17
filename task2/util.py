@@ -20,7 +20,8 @@ def get_all_neighbours(state):
                     modified_state_node.row_nodes, modified_state_node.col_nodes = this_todo(modified_state_node.row_nodes, modified_state_node.col_nodes)
                     neighbours.append(modified_state_node)
                 except IndexError:
-                    print("Pruned down to zero :(")
+                    pass
+                    #print("Pruned down to zero :(")
 
     return neighbours
 
