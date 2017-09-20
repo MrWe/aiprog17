@@ -31,17 +31,17 @@ def main():
       col_nodes.append(node.Node(len(rows), column))
 
   row_nodes, col_nodes = util.todo(row_nodes, col_nodes)
+  winning_state = state_node.StateNode(row_nodes, col_nodes, None, 0)
 
   if not is_finished(row_nodes, col_nodes): #Initialize A*
-      state = state_node.StateNode(row_nodes, col_nodes, None, 0)
 
-      winning_state = astar.a_star(state)
+      winning_state = astar.a_star(winning_state)
       row_nodes = winning_state.row_nodes
 
   display_ascii_image(row_nodes)
   t1 = time.time()
   print(t1-t0)
-  return row_nodes
+  return winning_state
 
 def is_finished(row_nodes, col_nodes):
     for node in row_nodes:
