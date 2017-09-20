@@ -41,7 +41,9 @@ Explains the heuristics used for this problem. Note that heuristics appear in at
 
 
 ## Methods
-Briefly overviews the primary subclasses and methods needed to specialize your general-purpose A*-GAC system to handle nonograms.
+1. **node.py**. Nodes in this program refer to a single row or column, with each nodes domain being all possible values for that row/column, both valid and invalid.
+2. **state_node.py**. When astar is needed to complete a board, the program generates a state given the set of pruned column-nodes and row-nodes. Each state contains one or many representations of an entire board, both valid and invalid.
+3. **constraints.py**. The constraints file contain the revise*-method. All calls to constraints from this method are made to problem-specific methods which will not work for other problems.
 
 ### Other design decisions
 Mentions any other design decisions that are, in your mind, critical to getting the system to perform well.
