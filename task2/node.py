@@ -1,14 +1,14 @@
 import itertools
 
-
 class Node:
     def __init__(self, length, requirement):
         self.length = length
         self.requirement = requirement
-        self.heuristic = 0
         self.domain = self.generate_domain(length, requirement)
+        self.heuristic = float("inf")
         self.duplicates = 0
 
+        self.set_h()
     # Create all legal permutations of elements in requirement and add them to the domain
     # Implicit requirements: Pieces stick together and are separated by one or more spaces
     def generate_domain(self, length, requirement):
@@ -39,7 +39,8 @@ class Node:
     def move_elements(self, original):
         return [original[-1]] + original[:-1]
 
-
+    def set_h(self):
+        self.heuristic = (len(self.domain) - 1) * self.length
 
     def init_domain(self, length, requirement, index=0):
 

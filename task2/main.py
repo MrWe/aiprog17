@@ -4,6 +4,10 @@ import sys
 import constraints
 import node
 import time
+import astar
+import state_node
+
+import util
 
 #Write only filename to choose board
 if len(sys.argv) > 1:
@@ -26,19 +30,13 @@ def main():
   for column in columns:
       col_nodes.append(node.Node(len(rows), column))
 
-  todo_revise = []
-  todo_revise.insert(0, constraints.common_elements_constraint)
-  todo_revise.insert(0, constraints.intersect_constraint)
+  row_nodes, col_nodes = util.todo(row_nodes, col_nodes)
 
-  while todo_revise:
-    function = todo_revise.pop()
-    row_nodes, col_nodes, colHasChanged, rowHasChanged = constraints.revise(row_nodes, col_nodes, function)
+  if not is_finished(row_nodes, col_nodes): #Initialize A*
+      state = state_node.StateNode(row_nodes, col_nodes, None, 0)
 
-    if colHasChanged or rowHasChanged:
-        todo_revise.insert(0, function)
-
-  if not is_finished(row_nodes, col_nodes):
-      print("No finish :(")
+      winning_state = astar.a_star(state)
+      row_nodes = winning_state.row_nodes
 
   display_ascii_image(row_nodes)
   t1 = time.time()
@@ -77,5 +75,3 @@ def read_board(name):
       columns[j][i] = int(columns[j][i])
   #list(reversed(rows)) Do we need this?
   return rows, columns
-
-main()
