@@ -2,7 +2,7 @@ from util import get_all_neighbours, has_won
 import lists
 
 
-def a_star(board, start_node):
+def a_star(start_node):
     generated_nodes = 1
 
     open_list = lists.OpenList()

@@ -17,7 +17,7 @@ def main():
   board = util.construct_board(carsArray)
   initNode = Node(carsArray, 0, None)
   t0 = time.time()
-  path = a_star(board, initNode)
+  path = a_star(initNode)
   t1 = time.time()
   print(t1-t0)
   return path if path else initNode
