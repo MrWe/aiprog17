@@ -278,3 +278,4 @@ def autoex(epochs=300,nbits=4,lrate=0.03,showint=100,mbs=None,vfrac=0.1,tfrac=0.
     ann.runmore(epochs*2)
     return ann
 
+autoex()

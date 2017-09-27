@@ -59,7 +59,6 @@ def tfex3b():
     z2 = z1 + y
     return quickrun([w,z1,z2])
 
-
 # Variable assignment as an explicit operation.
 def tfex4():
     x = tf.Variable(np.random.uniform(1, 2, size=(5, 1)), name='x')
