@@ -7,13 +7,15 @@ def load_data(file):
     f = open(file)
     separator = ';'
 
+    lines = []
     features = []
     labels = []
     for line in f.readlines():
         features.append(line.split(separator)[:-1])
         labels.append(TFT.int_to_one_hot(int(line.split(separator)[-1].strip()), len(features[0])))
+        lines.append([line.split(separator)[:-1], TFT.int_to_one_hot(int(line.split(separator)[-1].strip()), len(features[0]))])
 
-    return np.array(features), np.array(labels)
+    return lines
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):
     sess = session if session else TFT.gen_initialized_session(dir=dir)
