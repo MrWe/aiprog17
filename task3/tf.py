@@ -2,19 +2,37 @@ import os
 import numpy as np
 import tflowtools as TFT
 import tensorflow as tf
+import fileinput
+
+
+def replaceSeparator(file):
+    with fileinput.FileInput(file, inplace=True, backup='.bak') as file:
+        for line in file:
+            print(line.replace(";", ","), end='')
+
+
+def max_label(file):
+    f = open(file)
+    separator = ','
+    lines = []
+    max_length = 0
+    for line in f.readlines():
+        label = int(line.split(separator)[-1].strip())
+        if(max_length < label):
+            max_length = label
+
+    f.close()
+    return max_length
 
 def load_data(file):
+    one_hot_length = max_label(file);
     f = open(file)
-    separator = ';'
-
+    separator = ','
     lines = []
-    features = []
-    labels = []
     for line in f.readlines():
-        features.append(line.split(separator)[:-1])
-        labels.append(TFT.int_to_one_hot(int(line.split(separator)[-1].strip()), len(features[0])))
-        lines.append([line.split(separator)[:-1], TFT.int_to_one_hot(int(line.split(separator)[-1].strip()), len(features[0]))])
-
+        feature = line.split(separator)[:-1]
+        label = TFT.int_to_one_hot(int(line.split(separator)[-1].strip())-1, one_hot_length)
+        lines.append(np.array([feature, label]))
     return lines
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):

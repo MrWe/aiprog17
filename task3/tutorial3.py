@@ -231,7 +231,7 @@ class Gannmodule():
                                    name=mona+'-wgt',trainable=True) # True = default for trainable anyway
         self.biases = tf.Variable(np.random.uniform(-.1, .1, size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
-        self.output = tf.nn.sigmoid(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
+        self.output = tf.nn.softmax(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
         self.ann.add_module(self)
 
     def getvar(self,type):  # type = (in,out,wgt,bias)
@@ -285,24 +285,20 @@ class Caseman():
     def get_validation_cases(self): return self.validation_cases
     def get_testing_cases(self): return self.testing_cases
 
-def countex(epochs=5000,nbits=10,ncases=500,lrate=0.5,showint=500,mbs=20,vfrac=0.1,tfrac=0.1,vint=200,sm=True,bestk=1):
-    case_generator = (lambda: TFT.gen_vector_count_cases(ncases,nbits))
-    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
-    ann = Gann(dims=[nbits, nbits*3, nbits+1], cman=cman, lrate=lrate, showint=showint, mbs=mbs, vint=vint, softmax=sm)
-    ann.run(epochs,bestk=bestk)
-    return ann
-
 #   ****  MAIN functions ****
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def autoex(dataset='data_sets/wine.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=100,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+def autoex(dataset='data_sets/yeast.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
     data = load_data(dataset)
-    size = len(data[0][0])
+
+    size_in = len(data[0][0])
+    size_out = len(data[0][1])
+    print(size_out)
     mbs = mbs if mbs else size
     case_generator = (lambda : load_data(dataset))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=[size,nbits,size],cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
+    ann = Gann(dims=[size_in,nbits,size_out],cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm)
     ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
     ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
     ann.add_grabvar(0,'wgt', ) # Add a grabvar (to be displayed in its own matplotlib window).
