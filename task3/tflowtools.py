@@ -83,6 +83,9 @@ def int_to_one_hot(int,size,off_val=0, on_val=1,floats=False):
         v[int] = on_val
         return v
 
+def one_hot_to_int(one_hot):
+    return one_hot.index(1)
+
 # Generate all one-hot vectors of length len
 def all_one_hots(len, floats=False):
     return [int_to_one_hot(i,len,floats=floats) for i in range(len)]

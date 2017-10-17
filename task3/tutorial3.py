@@ -104,6 +104,16 @@ class Gann():
             print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
         return testres  # self.error uses MSE, so this is a per-case value when bestk=None
 
+    def run_mapping(self, cases, msg='Mapping'):
+        self.reopen_current_session()
+        sess = self.current_session
+        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
+        feeder = {self.input: inputs, self.target: targets}
+        self.test_func = self.gen_match_counter(self.predictor,[TFT.one_hot_to_int(v) for v in targets]) # why do we list() here?
+        testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess, feed_dict=feeder, show_interval=None)
+
+        print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
+        return testres
     # Logits = tensor, float - [batch_size, NUM_CLASSES].
     # labels: Labels tensor, int32 - [batch_size], with values in range [0, NUM_CLASSES).
     # in_top_k checks whether correct val is in the top k logit outputs.  It returns a vector of shape [batch_size]
@@ -289,7 +299,7 @@ class Caseman():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+def gradient_descent(dataset='data_sets/yeast.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
     data = load_data(dataset)
 
     size_in = len(data[0][0])
@@ -304,10 +314,14 @@ def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=4,lrate=0.0
     ann.add_grabvar(0,'wgt', ) # Add a grabvar (to be displayed in its own matplotlib window).
     ann.run(epochs)
     ann.runmore(epochs*2)
+
+    case_generator = (lambda : load_data(dataset))
+    cman = Caseman(cfunc=case_generator, vfrac=vfrac, tfrac=tfrac)
+    ann.run_mapping(cman.get_validation_cases())
     return ann
 
 
-#gradient_descent()
+gradient_descent()
 
 
 
