@@ -3,15 +3,20 @@ import numpy as np
 import tflowtools as TFT
 import tensorflow as tf
 import fileinput
+import random
 
 
 def replaceSeparator(file):
-    with fileinput.FileInput(file, inplace=True, backup='.bak') as file:
-        for line in file:
-            print(line.replace(";", ","), end='')
+    with open(file, "r") as file:
+        with open("data_sets/gamma.txt.bak", "w") as out:
+            for line in file:
+                if(random.uniform(0, 1) > 0.5):
+                    out.write(line)
 
 
 def max_label(file):
+    #replaceSeparator(file)
+
     f = open(file)
     separator = ','
     lines = []

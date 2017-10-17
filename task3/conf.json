@@ -1,0 +1,26 @@
+{
+  "wine":{
+    "path": "data_sets/wine.txt",
+    "learning_rate": 0.3,
+    "activation": "softmax",
+    "epochs": 500
+  },
+  "yeast":{
+    "path": "data_sets/yeast.txt",
+    "learning_rate": 0.3,
+    "activation": "softmax",
+    "epochs": 500
+  },
+  "glass":{
+    "path": "data_sets/glass.txt",
+    "learning_rate": 0.3,
+    "activation": "softmax",
+    "epochs": 500
+  },
+  "gamma":{
+    "path": "data_sets/gamma.txt",
+    "learning_rate": 0.3,
+    "activation": "softmax",
+    "epochs": 500
+  }
+}

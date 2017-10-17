@@ -5,6 +5,7 @@ import matplotlib.pyplot as PLT
 import tflowtools as TFT
 from tf import load_data
 
+
 # ******* A General Artificial Neural Network ********
 # This is the original GANN, which has been improved in the file gann.py
 
@@ -231,7 +232,7 @@ class Gannmodule():
                                    name=mona+'-wgt',trainable=True) # True = default for trainable anyway
         self.biases = tf.Variable(np.random.uniform(-.1, .1, size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
-        self.output = tf.nn.softmax(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
+        self.output = tf.nn.sigmoid(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
         self.ann.add_module(self)
 
     def getvar(self,type):  # type = (in,out,wgt,bias)
@@ -277,7 +278,6 @@ class Caseman():
         separator1 = round(len(self.cases) * self.training_fraction)
         separator2 = separator1 + round(len(self.cases)*self.validation_fraction)
         self.training_cases = ca[0:separator1]
-        print(self.training_cases)
         self.validation_cases = ca[separator1:separator2]
         self.testing_cases = ca[separator2:]
 
@@ -289,12 +289,12 @@ class Caseman():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def autoex(dataset='data_sets/yeast.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
     data = load_data(dataset)
 
     size_in = len(data[0][0])
     size_out = len(data[0][1])
-    print(size_out)
+
     mbs = mbs if mbs else size
     case_generator = (lambda : load_data(dataset))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
@@ -305,7 +305,9 @@ def autoex(dataset='data_sets/yeast.txt', epochs=500,nbits=4,lrate=0.03,showint=
     ann.run(epochs)
     ann.runmore(epochs*2)
     return ann
-autoex()
+
+
+#gradient_descent()
 
 
 
