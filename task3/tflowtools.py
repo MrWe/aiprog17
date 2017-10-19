@@ -83,6 +83,9 @@ def int_to_one_hot(int,size,off_val=0, on_val=1,floats=False):
         v[int] = on_val
         return v
 
+def one_hot_to_int(one_hot):
+    return one_hot.index(1)
+
 # Generate all one-hot vectors of length len
 def all_one_hots(len, floats=False):
     return [int_to_one_hot(i,len,floats=floats) for i in range(len)]
@@ -307,7 +310,7 @@ def plot_training_history(error_hist,validation_hist=[],xtitle="Epoch",ytitle="E
     if fig: PLT.figure()
     if len(error_hist) > 0:
         simple_plot([p[1] for p in error_hist], [p[0] for p in error_hist],xtitle=xtitle,ytitle=ytitle,title=title)
-        PLT.hold(True)
+        #PLT.hold(True)
     if len(validation_hist) > 0:
         simple_plot([p[1] for p in validation_hist], [p[0] for p in validation_hist])
     PLT.ioff()

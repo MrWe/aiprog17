@@ -4,6 +4,7 @@ import math
 import matplotlib.pyplot as PLT
 import tflowtools as TFT
 from load_dataset import load_data
+import random
 
 
 # ******* A General Artificial Neural Network ********
@@ -11,7 +12,7 @@ from load_dataset import load_data
 
 class Gann():
 
-    def __init__(self, dims, cman,lrate=.1,showint=None,mbs=10,vint=None,softmax=False, output_activation_function="softmax", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
+    def __init__(self, dims, cman,lrate=.1,showint=None,mbs=10,vint=None,softmax=False, output_activation_function="softmax", hidden_activation_function='sigmoid', cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
         self.learning_rate = lrate
         self.layer_sizes = dims # Sizes of each layer of neurons
         self.show_interval = showint # Frequency of showing grabbed variables
@@ -25,6 +26,7 @@ class Gann():
         self.softmax_outputs = softmax
         self.modules = []
         self.output_activation_function = output_activation_function
+        self.hidden_activation_function = hidden_activation_function
         self.cost_function = cost_function
         self.init_weight_range = init_weight_range
         self.init_bias_range = init_bias_range
@@ -53,10 +55,11 @@ class Gann():
         invar = self.input; insize = num_inputs
         # Build all of the modules
         for i,outsize in enumerate(self.layer_sizes[1:]):
-            gmod = Gannmodule(self,i,invar,insize,outsize,self.init_weight_range, self.init_bias_range)
+            gmod = Gannmodule(self,i,invar,insize,outsize,self.hidden_activation_function,self.init_weight_range, self.init_bias_range)
             invar = gmod.output; insize = gmod.outsize
         self.output = gmod.output # Output of last module is output of whole network
-        if self.softmax_outputs: self.output = eval("tf.nn." + self.output_activation_function +"(self.output)")
+        #if self.softmax_outputs:
+        self.output = eval("tf.nn." + self.output_activation_function +"(self.output)")
         self.target = tf.placeholder(tf.float64,shape=(None,gmod.outsize),name='Target')
         self.configure_learning()
 
@@ -104,7 +107,8 @@ class Gann():
         testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
                                            feed_dict=feeder,  show_interval=None)
         if bestk is None:
-            print('%s Set Error = %f ' % (msg, testres))
+            if(random.random() < 0.1):
+                print('%s Set Error = %f ' % (msg, testres))
         else:
             print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
         return testres  # self.error uses MSE, so this is a per-case value when bestk=None
@@ -187,6 +191,20 @@ class Gann():
         self.reopen_current_session()
         self.run(epochs,sess=self.current_session,continued=True,bestk=bestk)
 
+    def run_mapping(self,cases,msg='Mapping'):
+        self.reopen_current_session()
+        sess=self.current_session
+        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
+        feeder = {self.input: inputs, self.target: targets}
+        self.test_func = self.gen_match_counter(self.predictor,[TFT.one_hot_to_int(list(v)) for v in targets])
+        testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
+                                           feed_dict=feeder,  show_interval=None)
+
+
+        print('%s Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
+        return testres
+
+
     #   ******* Saving GANN Parameters (weights and biases) *******************
     # This is useful when you want to use "runmore" to do additional training on a network.
     # spath should have at least one directory (e.g. netsaver), which you will need to create ahead of time.
@@ -222,7 +240,7 @@ class Gann():
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
 class Gannmodule():
 
-    def __init__(self,ann,index,invariable,insize,outsize,init_weight_range, init_bias_range):
+    def __init__(self,ann,index,invariable,insize,outsize,hidden_activation_function,init_weight_range, init_bias_range):
         self.ann = ann
         self.insize=insize  # Number of neurons feeding into this module
         self.outsize=outsize # Number of neurons in this module
@@ -231,6 +249,7 @@ class Gannmodule():
         self.name = "Module-"+str(self.index)
         self.init_weight_range = init_weight_range
         self.init_bias_range = init_bias_range
+        self.hidden_activation_function = hidden_activation_function
         self.build()
 
     def build(self):
@@ -239,7 +258,7 @@ class Gannmodule():
                                    name=mona+'-wgt',trainable=True) # True = default for trainable anyway
         self.biases = tf.Variable(np.random.uniform(self.init_bias_range[0], self.init_bias_range[1], size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
-        self.output = tf.nn.sigmoid(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
+        self.output = eval("tf.nn." + self.hidden_activation_function + "(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')")
         self.ann.add_module(self)
 
     def getvar(self,type):  # type = (in,out,wgt,bias)
@@ -296,7 +315,7 @@ class Caseman():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=[4, 4, 5],lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
+def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=[4],lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
     data = load_data(dataset, cfrac)
 
     size_in = len(data[0][0])
@@ -309,20 +328,26 @@ def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=[4, 4, 5],l
     mbs = mbs if mbs else size
     case_generator = (lambda : load_data(dataset, cfrac))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)
-    ann.gen_probe(0,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 0.
-    ann.gen_probe(1,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 1.
-    ann.gen_probe(2,'wgt',('hist','avg'))  # Plot a histogram and avg of the incoming weights to module 2.
-    #ann.gen_probe(1,'out',('avg','max'))  # Plot average and max value of module 1's output vector
-    #ann.gen_probe(1,'in',('avg','max'))  # Plot average and max value of module 1's output vector
-    ann.add_grabvar(0,'wgt', ) # Add a grabvar (to be displayed in its own matplotlib window).
-    ann.add_grabvar(1,'wgt', ) # Add a grabvar (to be displayed in its own matplotlib window).
-    ann.add_grabvar(2,'wgt', ) # Add a grabvar (to be displayed in its own matplotlib window).
-    #ann.add_grabvar(1, 'out')
-    #ann.add_grabvar(0, 'in')
-    #ann.add_grabvar(1, 'bias')
+    ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,hidden_activation_function=hidden_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)
+
+    for i in range(len(nbits)):
+        ann.gen_probe(i,'wgt',('hist','avg'))
+        ann.add_grabvar(i,'wgt' ) # Add a grabvar (to be displayed in its own matplotlib window).
+        ann.gen_probe(i,'out',('hist','avg'))
+        ann.add_grabvar(i,'out' ) # Add a grabvar (to be displayed in its own matplotlib window).
+        ann.gen_probe(i,'in',('hist','avg'))
+        ann.add_grabvar(i,'in' ) # Add a grabvar (to be displayed in its own matplotlib window).
+        ann.gen_probe(i,'bias',('hist','avg'))
+        ann.add_grabvar(i,'bias' ) # Add a grabvar (to be displayed in its own matplotlib window).
+
     ann.run(epochs)
-    #ann.runmore(epochs*2)
+    ann.runmore(epochs*2)
+
+    #case_generator = (lambda : load_data(dataset, vfrac))
+    #cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+    #ann.run_mapping(cman.get_validation_cases())
+
+    input("ENTER to exit")
     return ann
 
 

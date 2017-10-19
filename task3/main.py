@@ -29,19 +29,20 @@ from GANN import *
 #Input & output layer size should be set based on dataset and is therefore not listed.
 def main():
     use_conf = False
-    data_set = "glass"
+    data_set = "yeast"
     path = "data_sets/" + data_set + ".txt"
-    epochs = 500
-    lrate = 0.03
-    showint = 300
+    epochs = 30
+    lrate = .3
+    showint = 30
     mbs = 10
     vfrac = 0.1
     tfrac = 0.1
     cfrac = 1.0
     vint = 1
-    sm = False
-    hidden_layers = [5,10,5]
-    output_activation_function = 'softmax'
+    sm = True #TODO: Rename variable
+    hidden_layers = [5]
+    output_activation_function = 'softmax' #sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
+    hidden_activation_function = 'sigmoid'#sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
     cost_function = 'square'
     init_weight_range = [-.1, .1]
     init_bias_range = [-.1, .1]
@@ -56,7 +57,7 @@ def main():
 
     gradient_descent(dataset=path, epochs=epochs, nbits=hidden_layers, lrate=lrate, showint=showint, mbs=mbs,
     vfrac=vfrac, tfrac=tfrac, vint=vint, sm=sm, cfrac=cfrac, output_activation_function=output_activation_function,
-    cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range)
+    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range)
 
 
 if __name__ == '__main__':
