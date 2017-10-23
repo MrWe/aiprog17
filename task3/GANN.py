@@ -3,8 +3,9 @@ import numpy as np
 import math
 import matplotlib.pyplot as PLT
 import tflowtools as TFT
-from load_dataset import load_data
 import random
+from casemanager import *
+
 
 
 # ******* A General Artificial Neural Network ********
@@ -31,7 +32,6 @@ class Gann():
         self.init_weight_range = init_weight_range
         self.init_bias_range = init_bias_range
         self.build()
-
 
     # Probed variables are to be displayed in the Tensorboard.
     def gen_probe(self, module_index, type, spec):
@@ -107,8 +107,7 @@ class Gann():
         testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
                                            feed_dict=feeder,  show_interval=None)
         if bestk is None:
-            if(random.random() < 0.1):
-                print('%s Set Error = %f ' % (msg, testres))
+            print('%s Set Error = %f ' % (msg, testres))
         else:
             print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
         return testres  # self.error uses MSE, so this is a per-case value when bestk=None
@@ -181,7 +180,7 @@ class Gann():
         self.test_on_trains(sess=self.current_session,bestk=bestk)
         self.testing_session(sess=self.current_session,bestk=bestk)
         self.close_current_session(view=False)
-        PLT.ioff()
+        #PLT.ioff()
 
     # After a run is complete, runmore allows us to do additional training on the network, picking up where we
     # left off after the last call to run (or runmore).  Use of the "continued" parameter (along with
@@ -190,20 +189,6 @@ class Gann():
     def runmore(self,epochs=100,bestk=None):
         self.reopen_current_session()
         self.run(epochs,sess=self.current_session,continued=True,bestk=bestk)
-
-    def run_mapping(self,cases,msg='Mapping'):
-        self.reopen_current_session()
-        sess=self.current_session
-        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
-        feeder = {self.input: inputs, self.target: targets}
-        self.test_func = self.gen_match_counter(self.predictor,[TFT.one_hot_to_int(list(v)) for v in targets])
-        testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
-                                           feed_dict=feeder,  show_interval=None)
-
-
-        print('%s Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
-        return testres
-
 
     #   ******* Saving GANN Parameters (weights and biases) *******************
     # This is useful when you want to use "runmore" to do additional training on a network.
@@ -236,6 +221,46 @@ class Gann():
         self.save_session_params(sess=self.current_session)
         TFT.close_session(self.current_session, view=view)
 
+    def do_mapping(self,cases,bestk=None, msg="Mapping"):
+        PLT.ion()
+        self.reopen_current_session()
+        sess=self.current_session
+
+        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
+        feeder = {self.input: inputs, self.target: targets}
+
+        print(inputs)
+        print(targets)
+
+        self.grabvars = []
+        self.add_grabvar(1,'out' ) # Add a grabvar (to be displayed in its own matplotlib window).
+        self.test_func = self.gen_match_counter(self.predictor,[TFT.one_hot_to_int(list(v)) for v in targets])
+        testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
+                                           feed_dict=feeder,  show_interval=None)
+
+        print(testres)
+        self.display_grabvars(grabvals, self.grabvars)
+        labels = []
+        features = []
+        for i in range(len(grabvals[0][0])):
+            labels.append(grabvals[0][0][i])
+        for n in range(len(inputs[0])):
+            features.append(inputs[0][n])
+
+        print(labels)
+        print(features)
+        # for i in range(len(data)):
+        #     labels.append(data[i][1])
+        #     features.append(data[i][0])
+        # print(inputs[0])
+        # print("\n")
+        # print(targets)
+        #TFT.dendrogram(features, labels)
+
+        print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
+        #PLT.ioff()
+        return testres  # self.error uses MSE, so this is a per-case value when bestk=None
+
 
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
 class Gannmodule():
@@ -258,6 +283,7 @@ class Gannmodule():
                                    name=mona+'-wgt',trainable=True) # True = default for trainable anyway
         self.biases = tf.Variable(np.random.uniform(self.init_bias_range[0], self.init_bias_range[1], size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
+        #self.output = tf.nn.relu(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
         self.output = eval("tf.nn." + self.hidden_activation_function + "(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')")
         self.ann.add_module(self)
 
@@ -280,74 +306,47 @@ class Gannmodule():
             if 'hist' in spec:
                 tf.summary.histogram(base + '/hist/',var)
 
-# *********** CASE MANAGER ********
-# This is a simple class for organizing the cases (training, validation and test) for a
-# a machine-learning system
-
-class Caseman():
-
-    def __init__(self,cfunc,vfrac=0,tfrac=0):
-        self.casefunc = cfunc
-        self.validation_fraction = vfrac
-        self.test_fraction = tfrac
-        self.training_fraction = 1 - (vfrac + tfrac)
-        self.generate_cases()
-        self.organize_cases()
-
-    def generate_cases(self):
-        self.cases = self.casefunc()  # Run the case generator.  Case = [input-vector, target-vector]
 
 
-    def organize_cases(self):
-        ca = np.array(self.cases)
-        np.random.shuffle(ca) # Randomly shuffle all cases
-        separator1 = round(len(self.cases) * self.training_fraction)
-        separator2 = separator1 + round(len(self.cases)*self.validation_fraction)
-        self.training_cases = ca[0:separator1]
-        self.validation_cases = ca[separator1:separator2]
-        self.testing_cases = ca[separator2:]
 
-    def get_training_cases(self): return self.training_cases
-    def get_validation_cases(self): return self.validation_cases
-    def get_testing_cases(self): return self.testing_cases
 
 #   ****  MAIN functions ****
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=[4],lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
-    data = load_data(dataset, cfrac)
+def gradient_descent(epochs=500,nbits=[4],lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
 
-    size_in = len(data[0][0])
-    size_out = len(data[0][1])
-
-    dims = [size_in]
-    dims.extend(nbits)
-    dims.append(size_out)
-
+    nbits = 3
+    size = 2**nbits
     mbs = mbs if mbs else size
-    case_generator = (lambda : load_data(dataset, cfrac))
+    case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
     cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+    dims=[size,nbits,size]
+
+
     ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,hidden_activation_function=hidden_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)
 
-    for i in range(len(nbits)):
-        ann.gen_probe(i,'wgt',('hist','avg'))
+    for i in range(len(dims)-1):
+        #ann.gen_probe(i,'wgt',('hist','avg'))
         ann.add_grabvar(i,'wgt' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        ann.gen_probe(i,'out',('hist','avg'))
+        #ann.gen_probe(i,'out',('hist','avg'))
         ann.add_grabvar(i,'out' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        ann.gen_probe(i,'in',('hist','avg'))
+        #ann.gen_probe(i,'in',('hist','avg'))
         ann.add_grabvar(i,'in' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        ann.gen_probe(i,'bias',('hist','avg'))
+        #ann.gen_probe(i,'bias',('hist','avg'))
         ann.add_grabvar(i,'bias' ) # Add a grabvar (to be displayed in its own matplotlib window).
 
+
     ann.run(epochs)
-    ann.runmore(epochs*2)
+    #ann.runmore(epochs*2)
+
+    ann.do_mapping(cman.cases)
 
     #case_generator = (lambda : load_data(dataset, vfrac))
     #cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
     #ann.run_mapping(cman.get_validation_cases())
-
-    input("ENTER to exit")
+    input("Look at pretty graphs")
+    PLT.close('all')
     return ann
 
 

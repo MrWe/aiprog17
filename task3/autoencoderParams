@@ -1,0 +1,15 @@
+epochs = 1000
+  lrate = .1
+  showint = 100
+  mbs = 150
+  vfrac = 0.1
+  tfrac = 0.1
+  cfrac = 1.0
+  vint = 50
+  sm = True #TODO: Rename variable
+  hidden_layers = [3]
+  output_activation_function = 'tanh' #sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
+  hidden_activation_function = 'tanh'#sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
+  cost_function = 'square'
+  init_weight_range = [-1, 1]
+  init_bias_range = [-1, 1]
