@@ -226,41 +226,12 @@ class Gann():
         self.reopen_current_session()
         sess=self.current_session
 
-        inputs = [c[0] for c in cases]; targets = [c[1] for c in cases]
-        feeder = {self.input: inputs, self.target: targets}
+        inputs = [c[0] for c in cases]#; targets = [c[1] for c in cases]
+        feeder = {self.input: inputs} #, self.target: targets}
+        outputs = sess.run(self.predictor, feeder)
 
-        print(inputs)
-        print(targets)
-
-        self.grabvars = []
-        self.add_grabvar(1,'out' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        self.test_func = self.gen_match_counter(self.predictor,[TFT.one_hot_to_int(list(v)) for v in targets])
-        testres, grabvals, _ = self.run_one_step(self.test_func, self.grabvars, self.probes, session=sess,
-                                           feed_dict=feeder,  show_interval=None)
-
-        print(testres)
-        self.display_grabvars(grabvals, self.grabvars)
-        labels = []
-        features = []
-        for i in range(len(grabvals[0][0])):
-            labels.append(grabvals[0][0][i])
-        for n in range(len(inputs[0])):
-            features.append(inputs[0][n])
-
-        print(labels)
-        print(features)
-        # for i in range(len(data)):
-        #     labels.append(data[i][1])
-        #     features.append(data[i][0])
-        # print(inputs[0])
-        # print("\n")
-        # print(targets)
-        #TFT.dendrogram(features, labels)
-
-        print('%s Set Correct Classifications = %f %%' % (msg, 100*(testres/len(cases))))
-        #PLT.ioff()
-        return testres  # self.error uses MSE, so this is a per-case value when bestk=None
-
+        TFT.hinton_plot(np.array(inputs), title='Input pattern')
+        TFT.hinton_plot(outputs, title='Output pattern')
 
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
 class Gannmodule():
