@@ -9,7 +9,20 @@
     "path": "data_sets/yeast.txt",
     "learning_rate": 0.3,
     "activation": "softmax",
-    "epochs": 500
+    "epochs": 30,
+    "mbs": 10,
+    "showint": 30,
+    "vfrac": 0.1,
+    "tfrac": 0.1,
+    "cfrac": 1.0,
+    "vint": 1,
+    "sm": "True",
+    "hidden_layers": [5],
+    "output_activation_function": "softmax",
+    "hidden_activation_function": "sigmoid",
+    "cost_function": "square",
+    "init_weight_range": [-0.1, 0.1],
+    "init_bias_range": [-0.1, 0.1]
   },
   "glass":{
     "path": "data_sets/glass.txt",
