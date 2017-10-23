@@ -299,7 +299,7 @@ class Caseman():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(dataset='data_sets/yeast.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
+def gradient_descent(dataset='data_sets/glass.txt', epochs=500,nbits=4,lrate=0.03,showint=300,mbs=110,vfrac=0.1,tfrac=0.1,vint=100,sm=False):
     data = load_data(dataset)
 
     size_in = len(data[0][0])
