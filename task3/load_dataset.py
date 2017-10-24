@@ -39,7 +39,7 @@ def load_data(file, cfrac):
         if(random.random() <= cfrac):
             feature = line.split(separator)[:-1]
             label = TFT.int_to_one_hot(int(line.split(separator)[-1].strip())-1, one_hot_length)
-            lines.append(np.array([feature, label]))
+            lines.append([feature, label])
     return lines
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):

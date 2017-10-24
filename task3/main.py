@@ -25,27 +25,54 @@
 #Display weights(list of the wights to be visualized at the end of the run)
 #Display biases(List of the biases to be visualized at the end of the run)
 from GANN import *
+from casemanager import *
+from load_dataset import load_data
+import tflowtools as TFT
+import json
 
 #Input & output layer size should be set based on dataset and is therefore not listed.
 def main():
-    use_conf = False
-    data_set = "yeast"
-    path = "data_sets/" + data_set + ".txt"
-    epochs = 30
-    lrate = .3
-    showint = 30
-    mbs = 10
-    vfrac = 0.1
-    tfrac = 0.1
-    cfrac = 1.0
-    vint = 1
-    sm = True #TODO: Rename variable
-    hidden_layers = [5]
-    output_activation_function = 'softmax' #sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
-    hidden_activation_function = 'sigmoid'#sigmoid, tanh, elu, softplus, and softsign), continuous but not everywhere differentiable functions (relu, relu6, crelu and relu_x), and random regularization (dropout)
-    cost_function = 'square'
-    init_weight_range = [-.1, .1]
-    init_bias_range = [-.1, .1]
+    data_set = "egendef"
+    with open("conf.json") as jfile:
+        data = json.load(jfile)
+        #path = data[data_set]["path"]
+        epochs = data[data_set]["epochs"]
+        lrate = data[data_set]["lrate"]
+        showint = data[data_set]["showint"]
+        mbs = data[data_set]["mbs"]
+        vfrac = data[data_set]["vfrac"]
+        tfrac = data[data_set]["tfrac"]
+        cfrac = data[data_set]["cfrac"]
+        vint = data[data_set]["vint"]
+        hidden_layers = data[data_set]["hidden_layers"]
+        output_activation_function = data[data_set]["output_activation_function"]
+        hidden_activation_function = data[data_set]["hidden_activation_function"]
+        cost_function = data[data_set]["cost_function"]
+        init_weight_range = data[data_set]["init_weight_range"]
+        init_bias_range = data[data_set]["init_bias_range"]
+
+
+    if(data_set == "autoEncode"):
+        hidden_layers[0]
+        case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
+    # data = load_data(dataset, cfrac)
+    #
+    # size_in = len(data[0][0])
+    # size_out = len(data[0][1])
+    #
+    #
+    #
+    # dims = [size_in]
+    # dims.extend(nbits)
+    # dims.append(size_out)
+    #
+    #
+    # print(dims)
+    #
+    # mbs = mbs if mbs else size_in
+    # case_generator = (lambda : load_data(dataset, cfrac))
+    # cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+
 
 
     map_batch_size = 0.3 # number of cases to run mapping on
@@ -55,10 +82,15 @@ def main():
     # display_biases =
 
 
-    gradient_descent(dataset=path, epochs=epochs, nbits=hidden_layers, lrate=lrate, showint=showint, mbs=mbs,
-    vfrac=vfrac, tfrac=tfrac, vint=vint, sm=sm, cfrac=cfrac, output_activation_function=output_activation_function,
+    gradient_descent(epochs=epochs, nbits=hidden_layers, lrate=lrate, showint=showint, mbs=mbs,
+    vfrac=vfrac, tfrac=tfrac, vint=vint, cfrac=cfrac, output_activation_function=output_activation_function,
     hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range)
 
 
 if __name__ == '__main__':
     main()
+    while(True):
+        if(input("ENTER to exit") != ""):
+            main()
+        else:
+            break
