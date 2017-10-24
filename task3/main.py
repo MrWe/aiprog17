@@ -30,12 +30,14 @@ from load_dataset import load_data
 import tflowtools as TFT
 import json
 
+file_sets = ["wine", "glass", "gamma", "yeast"];
+
 #Input & output layer size should be set based on dataset and is therefore not listed.
 def main():
-    data_set = "egendef"
+    data_set = ""
     with open("conf.json") as jfile:
         data = json.load(jfile)
-        #path = data[data_set]["path"]
+        data_set = data["data_set"]
         epochs = data[data_set]["epochs"]
         lrate = data[data_set]["lrate"]
         showint = data[data_set]["showint"]
@@ -44,45 +46,59 @@ def main():
         tfrac = data[data_set]["tfrac"]
         cfrac = data[data_set]["cfrac"]
         vint = data[data_set]["vint"]
-        hidden_layers = data[data_set]["hidden_layers"]
+        layers = data[data_set]["hidden_layers"]
         output_activation_function = data[data_set]["output_activation_function"]
         hidden_activation_function = data[data_set]["hidden_activation_function"]
         cost_function = data[data_set]["cost_function"]
         init_weight_range = data[data_set]["init_weight_range"]
         init_bias_range = data[data_set]["init_bias_range"]
+        if(data_set not in file_sets):
+            nbits = data[data_set]["nbits"]
+        else:
+            path = "data_sets/"+data_set+".txt"
 
 
     if(data_set == "autoEncode"):
-        hidden_layers[0]
+        size = 2**nbits
+        mbs = mbs if mbs else size
         case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
-    # data = load_data(dataset, cfrac)
-    #
-    # size_in = len(data[0][0])
-    # size_out = len(data[0][1])
-    #
-    #
-    #
-    # dims = [size_in]
-    # dims.extend(nbits)
-    # dims.append(size_out)
-    #
-    #
-    # print(dims)
-    #
-    # mbs = mbs if mbs else size_in
-    # case_generator = (lambda : load_data(dataset, cfrac))
-    # cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        layers=[size,nbits,size]
+    elif(data_set == "parity"):
+        size = 2**nbits
+        mbs = mbs if mbs else size
+        case_generator = (lambda : TFT.gen_all_parity_cases(size))
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        layers=[size,nbits,2]
+    else:
+        data = load_data(path, cfrac)
+
+        size_in = len(data[0][0])
+        size_out = len(data[0][1])
+
+        layers = [size_in]
+        layers.extend(layers)
+        layers.append(size_out)
+
+        mbs = mbs if mbs else size
+        case_generator = (lambda : load_data(path, cfrac))
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
 
 
 
-    map_batch_size = 0.3 # number of cases to run mapping on
-    # map_layers =
+
+
+
+
+
+    map_batch_size = 10 # number of cases to run mapping on
+    #map_layers =
     # map_dendrogram =
     # display_weights =
     # display_biases =
 
 
-    gradient_descent(epochs=epochs, nbits=hidden_layers, lrate=lrate, showint=showint, mbs=mbs,
+    gradient_descent(epochs=epochs, dims=layers, cman=cman, lrate=lrate, showint=showint, mbs=mbs,
     vfrac=vfrac, tfrac=tfrac, vint=vint, cfrac=cfrac, output_activation_function=output_activation_function,
     hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range)
 

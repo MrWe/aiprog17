@@ -38,7 +38,9 @@ def load_data(file, cfrac):
     for line in f.readlines():
         if(random.random() <= cfrac):
             feature = line.split(separator)[:-1]
+            feature = [float(i) for i in feature]
             label = TFT.int_to_one_hot(int(line.split(separator)[-1].strip())-1, one_hot_length)
+            label = [float(i) for i in label]
             lines.append([feature, label])
     return lines
 

@@ -1,11 +1,12 @@
 {
+  "data_set":"autoEncode",
   "wine":{
     "path": "data_sets/wine.txt",
     "lrate": 0.3,
     "output_activation_function": "tanh",
     "hidden_activation_function": "tanh",
     "cost_function": "square",
-    "mbs": 100,
+    "mbs": 20,
     "vfrac": 0.1,
     "tfrac": 0.1,
     "cfrac": 1.0,
@@ -28,7 +29,7 @@
     "cfrac": 1.0,
     "vint": 50,
     "showint": 100,
-    "epochs": 500,
+    "epochs": 200,
     "hidden_layers": [6],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1]
@@ -39,13 +40,13 @@
     "output_activation_function": "tanh",
     "hidden_activation_function": "tanh",
     "cost_function": "square",
-    "mbs": 100,
+    "mbs": 20,
     "vfrac": 0.1,
     "tfrac": 0.1,
     "cfrac": 1.0,
     "vint": 50,
     "showint": 100,
-    "epochs": 500,
+    "epochs": 20,
     "hidden_layers": [6],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1]
@@ -71,18 +72,19 @@
     "path": "",
     "lrate": 0.3,
     "output_activation_function": "tanh",
-    "hidden_activation_function": "tanh",
-    "cost_function": "square",
-    "mbs": 100,
+    "hidden_activation_function": "",
+    "cost_function": "softmax_cross_entropy_with_logits",
+    "mbs": 2,
     "vfrac": 0.1,
     "tfrac": 0.1,
     "cfrac": 1.0,
     "vint": 50,
     "showint": 100,
-    "epochs": 500,
+    "epochs": 300,
     "hidden_layers": [6],
     "init_weight_range": [-1, 1],
-    "init_bias_range": [-1, 1]
+    "init_bias_range": [-1, 1],
+    "nbits": 3
   },
   "autoEncode":{
     "path": "",
@@ -99,6 +101,25 @@
     "epochs": 500,
     "hidden_layers": [6],
     "init_weight_range": [-1, 1],
-    "init_bias_range": [-1, 1]
+    "init_bias_range": [-1, 1],
+    "nbits": 3
+  },
+  "parity":{
+    "path": "",
+    "lrate": 0.3,
+    "output_activation_function": "",
+    "hidden_activation_function": "",
+    "cost_function": "softmax_cross_entropy_with_logits",
+    "mbs": 100,
+    "vfrac": 0.1,
+    "tfrac": 0.1,
+    "cfrac": 1.0,
+    "vint": 50,
+    "showint": 100,
+    "epochs": 500,
+    "hidden_layers": [6],
+    "init_weight_range": [-1, 1],
+    "init_bias_range": [-1, 1],
+    "nbits": 2
   }
 }

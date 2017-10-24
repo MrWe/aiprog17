@@ -59,7 +59,8 @@ class Gann():
             invar = gmod.output; insize = gmod.outsize
         self.output = gmod.output # Output of last module is output of whole network
         #if self.softmax_outputs:
-        self.output = eval("tf.nn." + self.output_activation_function +"(self.output)")
+        if(self.output_activation_function != ""):
+            self.output = eval("tf.nn." + self.output_activation_function +"(self.output)")
         self.target = tf.placeholder(tf.float64,shape=(None,gmod.outsize),name='Target')
         self.configure_learning()
 
@@ -68,7 +69,10 @@ class Gann():
     # of the weight array.
 
     def configure_learning(self):
-        self.error = eval("tf.reduce_mean(tf." + self.cost_function + "(self.target - self.output),name='MSE')")
+        if(self.cost_function == "softmax_cross_entropy_with_logits"):
+            self.error = eval("tf.reduce_mean(tf.nn." + self.cost_function + "(labels=self.target, logits=self.output),name='MSE')")
+        elif(self.cost_function == "square"):
+            self.error = eval("tf.reduce_mean(tf." + self.cost_function + "(self.target - self.output),name='MSE')")
         self.predictor = self.output  # Simple prediction runs will request the value of output neurons
         # Defining the training operator
         optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
@@ -230,8 +234,26 @@ class Gann():
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)
 
+        self.grabvars = []
+        self.add_grabvar(1, 'out')
+        #self.test_func = self.error
+        _, grabvals, _ = self.run_one_step(self.predictor, self.grabvars, self.probes, session=sess,
+                                           feed_dict=feeder,  show_interval=None)
+
+        flat_grabvals = [val for sublist in grabvals for val in sublist]
+        flat_inputs = [val for sublist in inputs for val in sublist]
+
+
+        labels = []
+        for n in inputs:
+            labels.append(TFT.bits_to_str(n))
+
+        TFT.dendrogram(flat_grabvals, labels)
+
         TFT.hinton_plot(np.array(inputs), title='Input pattern')
         TFT.hinton_plot(outputs, title='Output pattern')
+
+
 
 # A general ann module = a layer of neurons (the output) plus its incoming weights and biases.
 class Gannmodule():
@@ -255,7 +277,10 @@ class Gannmodule():
         self.biases = tf.Variable(np.random.uniform(self.init_bias_range[0], self.init_bias_range[1], size=n),
                                   name=mona+'-bias', trainable=True)  # First bias vector
         #self.output = tf.nn.relu(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')
-        self.output = eval("tf.nn." + self.hidden_activation_function + "(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')")
+        if(self.hidden_activation_function == ""):
+            self.output = (tf.matmul(self.input,self.weights)+self.biases)
+        else:
+            self.output = eval("tf.nn." + self.hidden_activation_function + "(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')")
         self.ann.add_module(self)
 
     def getvar(self,type):  # type = (in,out,wgt,bias)
@@ -285,14 +310,17 @@ class Gannmodule():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(epochs=500,nbits=[4],lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
+def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
 
-    nbits = 3
-    size = 2**nbits
-    mbs = mbs if mbs else size
-    case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
-    cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-    dims=[size,nbits,size]
+    # nbits = 2
+    # size = 2**nbits
+    # mbs = mbs if mbs else size
+    # case_generator = (lambda : TFT.gen_all_parity_cases(2**nbits))
+    # cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+    # print(cman.get_training_cases())
+    # dims=[4,nbits,2]
+    #
+    print(dims)
 
 
     ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,hidden_activation_function=hidden_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)
@@ -308,7 +336,7 @@ def gradient_descent(epochs=500,nbits=[4],lrate=0.03,showint=300,mbs=None,vfrac=
         ann.add_grabvar(i,'bias' ) # Add a grabvar (to be displayed in its own matplotlib window).
 
 
-    ann.run(epochs)
+    ann.run(epochs, bestk=1)
     #ann.runmore(epochs*2)
 
     ann.do_mapping(cman.cases)
