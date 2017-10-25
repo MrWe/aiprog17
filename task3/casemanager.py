@@ -31,6 +31,8 @@ class Caseman():
         self.validation_cases = ca[separator1:separator2]
         self.testing_cases = ca[separator2:]
 
-    def get_training_cases(self): return self.training_cases
+    def get_training_cases(self):
+        np.random.shuffle(self.training_cases)
+        return self.training_cases
     def get_validation_cases(self): return self.validation_cases
     def get_testing_cases(self): return self.testing_cases

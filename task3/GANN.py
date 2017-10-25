@@ -83,7 +83,9 @@ class Gann():
         for i in range(epochs):
             error = 0; step = self.global_training_step + i
             gvars = [self.error] + self.grabvars
-            mbs = self.minibatch_size; ncases = len(cases); nmb = math.ceil(ncases/mbs)
+            mbs = self.minibatch_size;
+            ncases = len(cases);
+            nmb = math.ceil(ncases/mbs)
             for cstart in range(0,ncases,mbs):  # Loop through cases, one minibatch at a time.
                 cend = min(ncases,cstart+mbs)
                 minibatch = cases[cstart:cend]
@@ -230,7 +232,7 @@ class Gann():
         PLT.ion()
         self.reopen_current_session()
         sess=self.current_session
-
+        np.random.shuffle(cases)
         inputs = [c[0] for c in cases[:map_batch_size]]#; targets = [c[1] for c in cases]
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)

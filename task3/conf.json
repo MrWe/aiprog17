@@ -1,27 +1,22 @@
 {
-<<<<<<< HEAD
   "data_set":"wine",
-  "map_batch_size": 40,
+  "map_batch_size": 50,
   "show_layers":[],
   "grabvars": ["out","in","wgt"],
-=======
-  "data_set":"glass",
-  "map_batch_size": 20,
->>>>>>> 7698bfbbbdf792e30d84deb4bd3d265f1053a5bc
   "wine":{
     "path": "data_sets/wine.txt",
-    "lrate": 0.1,
-    "output_activation_function": "",
+    "lrate": 0.2,
+    "output_activation_function": "softmax",
     "hidden_activation_function": "tanh",
-    "cost_function": "softmax_cross_entropy_with_logits",
+    "cost_function": "square",
     "mbs": 10,
     "vfrac": 0.1,
     "tfrac": 0.1,
     "cfrac": 1.0,
     "vint": 50,
     "showint": 5,
-    "epochs": 20,
-    "hidden_layers": [200, 200],
+    "epochs": 200,
+    "hidden_layers": [20, 10],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1]
   },
@@ -53,15 +48,9 @@
     "tfrac": 0.5,
     "cfrac": 1.0,
     "vint": 50,
-<<<<<<< HEAD
     "showint": 1,
     "epochs": 20,
     "hidden_layers": [10,10],
-=======
-    "showint": 0,
-    "epochs": 200,
-    "hidden_layers": [200, 200],
->>>>>>> 7698bfbbbdf792e30d84deb4bd3d265f1053a5bc
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1]
   },
@@ -77,8 +66,8 @@
     "cfrac": 1.0,
     "vint": 50,
     "showint": 0,
-    "epochs": 100,
-    "hidden_layers": [6],
+    "epochs": 500,
+    "hidden_layers": [20],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1]
   },
@@ -103,60 +92,35 @@
   "autoEncode":{
     "path": "",
     "lrate": 0.1,
-    "output_activation_function": "tanh",
-    "hidden_activation_function": "tanh",
-<<<<<<< HEAD
-    "cost_function": "square",
-    "mbs": 10,
-    "vfrac": 0.1,
-    "tfrac": 0.8,
+    "output_activation_function": "softmax",
+    "hidden_activation_function": "sigmoid",
+    "cost_function": "softmax_cross_entropy_with_logits",
+    "mbs": 100,
+    "vfrac": 0,
+    "tfrac": 0,
     "cfrac": 1.0,
     "vint": 50,
     "showint": 100,
-    "epochs": 50,
-    "hidden_layers": [100,100],
-    "init_weight_range": [-0.1, 0.1],
-    "init_bias_range": [-0.1, 0.1],
-    "nbits": 5
-=======
-    "cost_function": "softmax_cross_entropy_with_logits",
-    "mbs": 100,
-    "vfrac": 0.1,
-    "tfrac": 0.1,
-    "cfrac": 1.0,
-    "vint": 50,
-    "showint": 0,
-    "epochs": 100,
-    "hidden_layers": [5],
+    "epochs": 2000,
+    "hidden_layers": [6],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1],
     "nbits": 3
->>>>>>> 7698bfbbbdf792e30d84deb4bd3d265f1053a5bc
   },
   "parity":{
     "path": "",
-    "lrate": 0.3,
-<<<<<<< HEAD
-    "output_activation_function": "",
-=======
-    "output_activation_function": "tanh",
->>>>>>> 7698bfbbbdf792e30d84deb4bd3d265f1053a5bc
-    "hidden_activation_function": "tanh",
+    "lrate": 0.1,
+    "output_activation_function": "softmax",
+    "hidden_activation_function": "sigmoid",
     "cost_function": "softmax_cross_entropy_with_logits",
     "mbs": 5,
     "vfrac": 0.1,
     "tfrac": 0.8,
     "cfrac": 1.0,
     "vint": 50,
-<<<<<<< HEAD
     "showint": 5,
-    "epochs": 20,
-    "hidden_layers": [100,100],
-=======
-    "showint": 0,
     "epochs": 500,
-    "hidden_layers": [6],
->>>>>>> 7698bfbbbdf792e30d84deb4bd3d265f1053a5bc
+    "hidden_layers": [10],
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1],
     "nbits": 3
