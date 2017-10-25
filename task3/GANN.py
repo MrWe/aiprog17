@@ -226,12 +226,12 @@ class Gann():
         self.save_session_params(sess=self.current_session)
         TFT.close_session(self.current_session, view=view)
 
-    def do_mapping(self,cases,bestk=None, msg="Mapping"):
+    def do_mapping(self,cases,map_batch_size,bestk=None, msg="Mapping"):
         PLT.ion()
         self.reopen_current_session()
         sess=self.current_session
 
-        inputs = [c[0] for c in cases[20]]#; targets = [c[1] for c in cases]
+        inputs = [c[0] for c in cases[:map_batch_size]]#; targets = [c[1] for c in cases]
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)
 
@@ -311,7 +311,7 @@ class Gannmodule():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1]):
+def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1], map_batch_size=20):
 
     # nbits = 2
     # size = 2**nbits
@@ -340,7 +340,7 @@ def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=No
     ann.run(epochs, bestk=1)
     #ann.runmore(epochs*2)
 
-    ann.do_mapping(cman.cases)
+    ann.do_mapping(cman.cases, map_batch_size)
 
     #case_generator = (lambda : load_data(dataset, vfrac))
     #cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)

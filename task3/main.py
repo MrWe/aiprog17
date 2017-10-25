@@ -47,7 +47,7 @@ def main():
         tfrac = data[data_set]["tfrac"]
         cfrac = data[data_set]["cfrac"]
         vint = data[data_set]["vint"]
-        layers = data[data_set]["hidden_layers"]
+        hidden_layers = data[data_set]["hidden_layers"]
         output_activation_function = data[data_set]["output_activation_function"]
         hidden_activation_function = data[data_set]["hidden_activation_function"]
         cost_function = data[data_set]["cost_function"]
@@ -78,7 +78,8 @@ def main():
         size_out = len(data[0][1])
 
         layers = [size_in]
-        layers.extend(layers)
+
+        layers.extend(hidden_layers)
         layers.append(size_out)
 
         mbs = mbs if mbs else size
@@ -93,7 +94,7 @@ def main():
 
     gradient_descent(epochs=epochs, dims=layers, cman=cman, lrate=lrate, showint=showint, mbs=mbs,
     vfrac=vfrac, tfrac=tfrac, vint=vint, cfrac=cfrac, output_activation_function=output_activation_function,
-    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range)
+    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range, map_batch_size=map_batch_size)
 
 
 if __name__ == '__main__':
