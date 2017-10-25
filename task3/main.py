@@ -3,16 +3,13 @@ from casemanager import *
 from load_dataset import load_data, get_valid_mnist
 import tflowtools as TFT
 import json
-<<<<<<< Updated upstream
 import random
 
 random.seed(123)
 np.random.seed(123)
 tf.set_random_seed(123)
-=======
 import sys
 import mnist_basics as mnist
->>>>>>> Stashed changes
 
 file_sets = ["wine", "glass", "gamma", "yeast"];
 

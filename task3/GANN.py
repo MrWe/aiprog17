@@ -238,7 +238,7 @@ class Gann():
         self.reopen_current_session()
         sess=self.current_session
         np.random.shuffle(cases)
-        inputs = [c[0] for c in cases[:map_batch_size]]#; targets = [c[1] for c in cases]
+        inputs = [c[0] for c in cases[:map_batch_size]]; targets = [c[1] for c in cases]
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)
 
@@ -255,17 +255,17 @@ class Gann():
                                            feed_dict=feeder,  show_interval=None)
 
         flat_grabvals = [val for sublist in grabvals for val in sublist]
-        flat_inputs = [val for sublist in inputs for val in sublist]
+        flat_targets = [val for sublist in targets for val in sublist]
 
-        self.display_grabvars(grabvals, self.grabvars)
+        #self.display_grabvars(grabvals, self.grabvars)
         labels = []
-        for n in inputs:
-            labels.append(TFT.bits_to_str(n))
+        for n in targets:
+            labels.append(n)
 
         PLT.figure()
         TFT.dendrogram(flat_grabvals, labels)
 
-        TFT.hinton_plot(np.array(inputs), title='Input pattern')
+        TFT.hinton_plot(np.array(labels), title='Input pattern')
         TFT.hinton_plot(outputs, title='Output pattern')
 
 
