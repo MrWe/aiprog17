@@ -64,6 +64,8 @@ class Gann():
         #if self.softmax_outputs:
         if(self.output_activation_function != ""):
             self.output = eval("tf.nn." + self.output_activation_function +"(self.output)")
+        else:
+            self.output = gmod.set_linear()
         self.target = tf.placeholder(tf.float64,shape=(None,gmod.outsize),name='Target')
         self.configure_learning()
 
@@ -231,7 +233,7 @@ class Gann():
         self.save_session_params(sess=self.current_session)
         TFT.close_session(self.current_session, view=view)
 
-    def do_mapping(self,cases,map_batch_size,bestk=None, msg="Mapping"):
+    def do_mapping(self,cases,map_batch_size,map_grabvars,map_layers,bestk=None, msg="Mapping"):
         PLT.ion()
         self.reopen_current_session()
         sess=self.current_session
@@ -241,7 +243,13 @@ class Gann():
         outputs = sess.run(self.predictor, feeder)
 
         self.grabvars = []
-        self.add_grabvar(1, 'out')
+        print(map_layers)
+        for i in range(len(map_layers)):
+            for j in range(len(map_grabvars)):
+                #ann.gen_probe(i,'wgt',('hist','avg'))
+                self.add_grabvar(map_layers[i],map_grabvars[j]) # Add a grabvar (to be displayed in its own matplotlib window).
+
+
         #self.test_func = self.error
         _, grabvals, _ = self.run_one_step(self.predictor, self.grabvars, self.probes, session=sess,
                                            feed_dict=feeder,  show_interval=None)
@@ -249,12 +257,12 @@ class Gann():
         flat_grabvals = [val for sublist in grabvals for val in sublist]
         flat_inputs = [val for sublist in inputs for val in sublist]
 
-
+        self.display_grabvars(grabvals, self.grabvars)
         labels = []
         for n in inputs:
             labels.append(TFT.bits_to_str(n))
 
-        TFT.dendrogram(flat_grabvals, labels)
+        #TFT.dendrogram(flat_grabvals, labels)
 
         TFT.hinton_plot(np.array(inputs), title='Input pattern')
         TFT.hinton_plot(outputs, title='Output pattern')
@@ -289,6 +297,9 @@ class Gannmodule():
             self.output = eval("tf.nn." + self.hidden_activation_function + "(tf.matmul(self.input,self.weights)+self.biases,name=mona+'-out')")
         self.ann.add_module(self)
 
+    def set_linear(self):
+        return (tf.matmul(self.input,self.weights)+self.biases)
+
     def getvar(self,type):  # type = (in,out,wgt,bias)
         return {'in': self.input, 'out': self.output, 'wgt': self.weights, 'bias': self.biases}[type]
 
@@ -317,7 +328,7 @@ class Gannmodule():
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
 def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1],
-                     map_batch_size=20, show_layers=[0],grabvars=['wgt','out','in','bias']):
+                     map_batch_size=20, show_layers=[0],grabvars=['wgt','out','in','bias'], map_layers=[0], map_grabvars=['wgt','out','in','bias']):
 
     # nbits = 2
     # size = 2**nbits
@@ -339,11 +350,10 @@ def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=No
             #ann.gen_probe(i,'wgt',('hist','avg'))
             ann.add_grabvar(show_layers[i],grabvars[j] ) # Add a grabvar (to be displayed in its own matplotlib window).
 
-
     ann.run(epochs, bestk=1)
     #ann.runmore(epochs*2)
 
-    ann.do_mapping(cman.cases, map_batch_size)
+    ann.do_mapping(cman.cases,map_batch_size,map_grabvars,map_layers)
 
     #case_generator = (lambda : load_data(dataset, vfrac))
     #cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)

@@ -33,11 +33,18 @@ def max_label(file):
     f.close()
     return max_length
 
+def normalized(a, axis=-1, order=2):
+    l2 = np.atleast_1d(np.linalg.norm(a, order, axis))
+    l2[l2==0] = 1
+    return a / np.expand_dims(l2, axis)
+
 def load_data(file, cfrac):
     one_hot_length = max_label(file);
     f = open(file)
     separator = ','
     lines = []
+    features = []
+    labels = []
 
     for line in f.readlines():
         if(random.random() <= cfrac):
@@ -45,7 +52,15 @@ def load_data(file, cfrac):
             feature = [float(i) for i in feature]
             label = TFT.int_to_one_hot(int(line.split(separator)[-1].strip())-1, one_hot_length)
             label = [float(i) for i in label]
-            lines.append([feature, label])
+            features.append(feature)
+            labels.append(label)
+
+    means = np.mean(features, axis=0)
+    std = np.std(features, axis=0)
+    for n in range(len(features)):
+        for k in range(len(features[n])):
+            features[n][k] = (features[n][k] - means[k]) / std[k]
+        lines.append([features[n], labels[n]])
     return lines
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):

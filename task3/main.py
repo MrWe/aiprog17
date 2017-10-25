@@ -1,29 +1,3 @@
-#Params we need:
-#File -> string
-#learning rate -> float
-#epochs(steps) -> int
-#nbits=4
-#lrate=0.03
-#showint=300
-#Minibatch size
-#vfrac=0.1
-#tfrac=0.1
-#vint=100
-#sm=False
-#Number of layers
-#Layer size
-#Hidden activation function
-#Output activation function -> default=softmax
-#Cost function -> default=mean square error
-#Initial wight range -> default=random(-0.5,0.5)
-#Case fraction(fraction of dataset to be used) -> default=1.0
-#Validation fraction(fraction of dataset to be used to validate)
-#Test fraction(fraction of dataset to be used to test)
-#Map batch size(The number of training cases to be used for a map test)
-#Map layers(The layers to be visualized during the map test)
-#Map dendrogram(List of the layers whose activation patterns (during map test) will be used to produce dendrogram, one per specified layer)
-#Display weights(list of the wights to be visualized at the end of the run)
-#Display biases(List of the biases to be visualized at the end of the run)
 from GANN import *
 from casemanager import *
 from load_dataset import load_data
@@ -46,6 +20,8 @@ def main():
         map_batch_size = data["map_batch_size"]
         show_layers = data["show_layers"]
         grabvars = data["grabvars"]
+        map_layers = data["map_layers"]
+        map_grabvars = data["map_grabvars"]
         epochs = data[data_set]["epochs"]
         lrate = data[data_set]["lrate"]
         showint = data[data_set]["showint"]
@@ -71,7 +47,9 @@ def main():
         mbs = mbs if mbs else size
         case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
         cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-        layers=[size,nbits,size]
+        layers=[size]
+        layers.extend(hidden_layers)
+        layers.append(size)
     elif(data_set == "parity"):
         size = 2**nbits
         mbs = mbs if mbs else size
@@ -103,7 +81,9 @@ def main():
 
     gradient_descent(epochs=epochs, dims=layers, cman=cman, lrate=lrate, showint=showint, mbs=mbs,
     vfrac=vfrac, tfrac=tfrac, vint=vint, cfrac=cfrac, output_activation_function=output_activation_function,
-    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range, map_batch_size=map_batch_size,show_layers=show_layers, grabvars=grabvars)
+    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range,
+    init_bias_range=init_bias_range, map_batch_size=map_batch_size,show_layers=show_layers, grabvars=grabvars,
+    map_layers=map_layers,map_grabvars=map_grabvars)
 
 
 if __name__ == '__main__':
