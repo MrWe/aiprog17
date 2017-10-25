@@ -75,7 +75,7 @@ class Gann():
             self.error = eval("tf.reduce_mean(tf." + self.cost_function + "(self.target - self.output),name='MSE')")
         self.predictor = self.output  # Simple prediction runs will request the value of output neurons
         # Defining the training operator
-        optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+        optimizer = tf.train.AdamOptimizer(self.learning_rate)
         self.trainer = optimizer.minimize(self.error,name='Backprop')
 
     def do_training(self,sess,cases,epochs=100,continued=False):
@@ -162,7 +162,7 @@ class Gann():
             sess.probe_stream.add_summary(results[2], global_step=step)
         else:
             results = sess.run([operators, grabbed_vars], feed_dict=feed_dict)
-        if show_interval and (step % show_interval == 0):
+        if step != 0 and show_interval and (step % show_interval == 0):
             self.display_grabvars(results[1], grabbed_vars, step=step)
         return results[0], results[1], sess
 
@@ -311,7 +311,8 @@ class Gannmodule():
 
 # After running this, open a Tensorboard (Go to localhost:6006 in your Chrome Browser) and check the
 # 'scalar', 'distribution' and 'histogram' menu options to view the probed variables.
-def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1], map_batch_size=20):
+def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=None,vfrac=0.1,tfrac=0.1,vint=100,sm=False, cfrac=1.0, output_activation_function="softmax", hidden_activation_function="sigmoid", cost_function="square", init_weight_range=[-.1, .1], init_bias_range=[-.1, .1],
+                     map_batch_size=20, show_layers=[0],grabvars=['wgt','out','in','bias']):
 
     # nbits = 2
     # size = 2**nbits
@@ -326,15 +327,12 @@ def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=No
 
     ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,hidden_activation_function=hidden_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)
 
-    for i in range(len(dims)-1):
-        #ann.gen_probe(i,'wgt',('hist','avg'))
-        ann.add_grabvar(i,'wgt' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        #ann.gen_probe(i,'out',('hist','avg'))
-        ann.add_grabvar(i,'out' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        #ann.gen_probe(i,'in',('hist','avg'))
-        ann.add_grabvar(i,'in' ) # Add a grabvar (to be displayed in its own matplotlib window).
-        #ann.gen_probe(i,'bias',('hist','avg'))
-        ann.add_grabvar(i,'bias' ) # Add a grabvar (to be displayed in its own matplotlib window).
+
+
+    for i in range(len(show_layers)):
+        for j in range(len(grabvars)):
+            #ann.gen_probe(i,'wgt',('hist','avg'))
+            ann.add_grabvar(show_layers[i],grabvars[j] ) # Add a grabvar (to be displayed in its own matplotlib window).
 
 
     ann.run(epochs, bestk=1)

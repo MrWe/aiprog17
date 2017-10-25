@@ -39,6 +39,8 @@ def main():
         data = json.load(jfile)
         data_set = data["data_set"]
         map_batch_size = data["map_batch_size"]
+        show_layers = data["show_layers"]
+        grabvars = data["grabvars"]
         epochs = data[data_set]["epochs"]
         lrate = data[data_set]["lrate"]
         showint = data[data_set]["showint"]
@@ -70,7 +72,9 @@ def main():
         mbs = mbs if mbs else size
         case_generator = (lambda : TFT.gen_all_parity_cases(size))
         cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-        layers=[size,nbits,2]
+        layers=[size]
+        layers.extend(hidden_layers)
+        layers.append(2)
     else:
         data = load_data(path, cfrac)
 
@@ -94,7 +98,7 @@ def main():
 
     gradient_descent(epochs=epochs, dims=layers, cman=cman, lrate=lrate, showint=showint, mbs=mbs,
     vfrac=vfrac, tfrac=tfrac, vint=vint, cfrac=cfrac, output_activation_function=output_activation_function,
-    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range, map_batch_size=map_batch_size)
+    hidden_activation_function=hidden_activation_function,cost_function=cost_function, init_weight_range=init_weight_range, init_bias_range=init_bias_range, map_batch_size=map_batch_size,show_layers=show_layers, grabvars=grabvars)
 
 
 if __name__ == '__main__':
