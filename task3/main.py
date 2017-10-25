@@ -46,28 +46,41 @@ def main():
         size = 2**nbits
         mbs = mbs if mbs else size
         case_generator = (lambda : TFT.gen_all_one_hot_cases(2**nbits))
-        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
         layers=[size]
         layers.extend(hidden_layers)
         layers.append(size)
     elif(data_set == "parity"):
-        size = 2**nbits
+        size = nbits
         mbs = mbs if mbs else size
+        print("parity")
         case_generator = (lambda : TFT.gen_all_parity_cases(size))
-        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
         layers=[size]
         layers.extend(hidden_layers)
         layers.append(2)
     elif(data_set == "bit_counter"):
-        size = 2**nbits
+        size = nbits
         mbs = mbs if mbs else size
-        case_generator = (lambda : TFT.gen_vector_count_cases(2**size,size))
-        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
-        layers=[size]
+        print("bit_counter")
+        case_generator = (lambda : TFT.gen_vector_count_cases(size,15))
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
+        layers=[15]
         layers.extend(hidden_layers)
-        layers.append(size+1)
+        layers.append(15+1)
+    elif(data_set == "seg_counter"):
+        size = nbits
+        mbs = mbs if mbs else size
+        print("seg_counter")
+        case_generator = (lambda : TFT.gen_segmented_vector_cases(25,1000,0,8))
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
+        layers=[25]
+        layers.extend(hidden_layers)
+        layers.append(9)
     elif(data_set == "mnist"):
         data = get_valid_mnist()
+
+
 
         size_in = len(data[0][0])
         size_out = len(data[0][1])
@@ -79,7 +92,7 @@ def main():
 
         mbs = mbs if mbs else size
         case_generator = (lambda : get_valid_mnist())
-        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
 
     else:
         data = load_data(path, cfrac)
@@ -94,7 +107,7 @@ def main():
 
         mbs = mbs if mbs else size
         case_generator = (lambda : load_data(path, cfrac))
-        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac,cfrac=cfrac)
 
 
 

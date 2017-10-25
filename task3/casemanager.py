@@ -15,13 +15,14 @@ tf.set_random_seed(123)
 
 class Caseman():
 
-    def __init__(self,cfunc,vfrac=0,tfrac=0):
+    def __init__(self,cfunc,vfrac=0,tfrac=0,cfrac=1.0):
         random.seed(123)
         np.random.seed(123)
         tf.set_random_seed(123)
         self.casefunc = cfunc
         self.validation_fraction = vfrac
         self.test_fraction = tfrac
+        self.cfrac = cfrac
         self.training_fraction = 1 - (vfrac + tfrac)
         self.generate_cases()
         self.organize_cases()
@@ -31,6 +32,8 @@ class Caseman():
 
     def organize_cases(self):
         ca = np.array(self.cases)
+        new_len = len(ca) * self.cfrac
+        ca = ca[0:int(new_len)]
         np.random.shuffle(ca) # Randomly shuffle all cases
         separator1 = round(len(self.cases) * self.training_fraction)
         separator2 = separator1 + round(len(self.cases)*self.validation_fraction)

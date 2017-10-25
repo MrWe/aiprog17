@@ -102,6 +102,7 @@ class Gann():
             self.error_history.append((step, error/nmb))
             self.consider_validation_testing(step,sess)
         self.global_training_step += epochs
+
         TFT.plot_training_history(self.error_history,self.validation_history,xtitle="Epoch",ytitle="Error",
                                   title="",fig=not(continued))
 
@@ -192,7 +193,7 @@ class Gann():
         self.test_on_trains(sess=self.current_session,bestk=bestk)
         self.testing_session(sess=self.current_session,bestk=1)
         self.close_current_session(view=False)
-        #PLT.ioff()
+        PLT.ioff()
 
     # After a run is complete, runmore allows us to do additional training on the network, picking up where we
     # left off after the last call to run (or runmore).  Use of the "continued" parameter (along with
@@ -234,6 +235,7 @@ class Gann():
         TFT.close_session(self.current_session, view=view)
 
     def do_mapping(self,cases,map_batch_size,map_grabvars,map_layers,bestk=None, msg="Mapping"):
+        print("-------------------DO MAPPING------------------")
         PLT.ion()
         self.reopen_current_session()
         sess=self.current_session
