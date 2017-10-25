@@ -5,8 +5,11 @@ import matplotlib.pyplot as PLT
 import tflowtools as TFT
 import random
 from casemanager import *
+import random
 
-
+random.seed(123)
+np.random.seed(123)
+tf.set_random_seed(123)
 
 # ******* A General Artificial Neural Network ********
 # This is the original GANN, which has been improved in the file gann.py

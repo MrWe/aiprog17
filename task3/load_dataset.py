@@ -5,6 +5,10 @@ import tensorflow as tf
 import fileinput
 import random
 
+random.seed(123)
+np.random.seed(123)
+tf.set_random_seed(123)
+
 
 def replaceSeparator(file):
     with open(file, "r") as file:

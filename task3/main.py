@@ -29,6 +29,11 @@ from casemanager import *
 from load_dataset import load_data
 import tflowtools as TFT
 import json
+import random
+
+random.seed(123)
+np.random.seed(123)
+tf.set_random_seed(123)
 
 file_sets = ["wine", "glass", "gamma", "yeast"];
 

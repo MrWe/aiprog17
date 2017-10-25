@@ -5,6 +5,10 @@ import matplotlib.pyplot as PLT
 import tflowtools as TFT
 import random
 
+random.seed(123)
+np.random.seed(123)
+tf.set_random_seed(123)
+
 # *********** CASE MANAGER ********
 # This is a simple class for organizing the cases (training, validation and test) for a
 # a machine-learning system
