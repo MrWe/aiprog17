@@ -38,6 +38,7 @@ def main():
     with open("conf.json") as jfile:
         data = json.load(jfile)
         data_set = data["data_set"]
+        map_batch_size = data["map_batch_size"]
         epochs = data[data_set]["epochs"]
         lrate = data[data_set]["lrate"]
         showint = data[data_set]["showint"]
@@ -84,14 +85,6 @@ def main():
         case_generator = (lambda : load_data(path, cfrac))
         cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
 
-
-
-
-
-
-
-
-    map_batch_size = 10 # number of cases to run mapping on
     #map_layers =
     # map_dendrogram =
     # display_weights =

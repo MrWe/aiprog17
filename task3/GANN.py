@@ -144,7 +144,8 @@ class Gann():
         if self.validation_interval and (epoch % self.validation_interval == 0):
             cases = self.caseman.get_validation_cases()
             if len(cases) > 0:
-                error = self.do_testing(sess,cases,msg='Validation Testing')
+                print("CASES: ", len(cases))
+                error = self.do_testing(sess,cases,msg='Validation Testing', bestk=1)
                 self.validation_history.append((epoch,error))
 
     # Do testing (i.e. calc error without learning) on the training set.
@@ -182,7 +183,7 @@ class Gann():
         PLT.ion()
         self.training_session(epochs,sess=sess,continued=continued)
         self.test_on_trains(sess=self.current_session,bestk=bestk)
-        self.testing_session(sess=self.current_session,bestk=bestk)
+        self.testing_session(sess=self.current_session,bestk=1)
         self.close_current_session(view=False)
         #PLT.ioff()
 
@@ -230,7 +231,7 @@ class Gann():
         self.reopen_current_session()
         sess=self.current_session
 
-        inputs = [c[0] for c in cases]#; targets = [c[1] for c in cases]
+        inputs = [c[0] for c in cases[20]]#; targets = [c[1] for c in cases]
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)
 
