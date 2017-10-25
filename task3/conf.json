@@ -126,5 +126,43 @@
     "init_weight_range": [-1, 1],
     "init_bias_range": [-1, 1],
     "nbits": 3
+  },
+  "bit_counter":{
+    "path": "",
+    "lrate": 0.1,
+    "output_activation_function": "softmax",
+    "hidden_activation_function": "sigmoid",
+    "cost_function": "softmax_cross_entropy_with_logits",
+    "mbs": 10,
+    "vfrac": 0.1,
+    "tfrac": 0.8,
+    "cfrac": 1.0,
+    "vint": 50,
+    "showint": 5,
+    "epochs": 500,
+    "hidden_layers": [10],
+    "init_weight_range": [-1, 1],
+    "init_bias_range": [-1, 1],
+    "nbits": 3
+  },
+  "mnist":{
+    "path": "",
+    "lrate": 0.1,
+    "output_activation_function": "softmax",
+    "hidden_activation_function": "sigmoid",
+    "cost_function": "softmax_cross_entropy_with_logits",
+    "mbs": 10,
+    "vfrac": 0.1,
+    "tfrac": 0.1,
+    "cfrac": 1.0,
+    "vint": 50,
+    "showint": 50,
+    "epochs": 1,
+    "hidden_layers": [10],
+    "init_weight_range": [-1, 1],
+    "init_bias_range": [-1, 1],
+    "nbits": 3
   }
 }
+
+

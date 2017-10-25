@@ -1,13 +1,18 @@
 from GANN import *
 from casemanager import *
-from load_dataset import load_data
+from load_dataset import load_data, get_valid_mnist
 import tflowtools as TFT
 import json
+<<<<<<< Updated upstream
 import random
 
 random.seed(123)
 np.random.seed(123)
 tf.set_random_seed(123)
+=======
+import sys
+import mnist_basics as mnist
+>>>>>>> Stashed changes
 
 file_sets = ["wine", "glass", "gamma", "yeast"];
 
@@ -58,6 +63,29 @@ def main():
         layers=[size]
         layers.extend(hidden_layers)
         layers.append(2)
+    elif(data_set == "bit_counter"):
+        size = 2**nbits
+        mbs = mbs if mbs else size
+        case_generator = (lambda : TFT.gen_vector_count_cases(2**size,size))
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+        layers=[size]
+        layers.extend(hidden_layers)
+        layers.append(size+1)
+    elif(data_set == "mnist"):
+        data = get_valid_mnist()
+
+        size_in = len(data[0][0])
+        size_out = len(data[0][1])
+
+        layers = [size_in]
+
+        layers.extend(hidden_layers)
+        layers.append(size_out)
+
+        mbs = mbs if mbs else size
+        case_generator = (lambda : get_valid_mnist())
+        cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
+
     else:
         data = load_data(path, cfrac)
 
@@ -73,6 +101,10 @@ def main():
         case_generator = (lambda : load_data(path, cfrac))
         cman = Caseman(cfunc=case_generator,vfrac=vfrac,tfrac=tfrac)
 
+
+
+
+
     #map_layers =
     # map_dendrogram =
     # display_weights =
@@ -86,7 +118,11 @@ def main():
     map_layers=map_layers,map_grabvars=map_grabvars)
 
 
+
+
+
 if __name__ == '__main__':
+
     main()
     while(True):
         if(input("ENTER to exit") != ""):

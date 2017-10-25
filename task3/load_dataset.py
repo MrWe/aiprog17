@@ -4,6 +4,7 @@ import tflowtools as TFT
 import tensorflow as tf
 import fileinput
 import random
+import mnist_basics as mnist
 
 random.seed(123)
 np.random.seed(123)
@@ -63,6 +64,18 @@ def load_data(file, cfrac):
         lines.append([features[n], labels[n]])
 
     return lines
+
+def get_valid_mnist():
+    data = mnist.load_all_flat_cases()
+    valid_data = []
+
+    for i in range(len(data[1])):
+
+        data[1][i] = TFT.int_to_one_hot(int(data[1][i]), 10)
+        valid_data.append([data[0][i],data[1][i]])
+
+    return valid_data
+
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):
     sess = session if session else TFT.gen_initialized_session(dir=dir)
