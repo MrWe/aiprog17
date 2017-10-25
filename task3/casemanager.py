@@ -16,6 +16,9 @@ tf.set_random_seed(123)
 class Caseman():
 
     def __init__(self,cfunc,vfrac=0,tfrac=0):
+        random.seed(123)
+        np.random.seed(123)
+        tf.set_random_seed(123)
         self.casefunc = cfunc
         self.validation_fraction = vfrac
         self.test_fraction = tfrac

@@ -238,12 +238,12 @@ class Gann():
         self.reopen_current_session()
         sess=self.current_session
         np.random.shuffle(cases)
-        inputs = [c[0] for c in cases[:map_batch_size]]; targets = [c[1] for c in cases]
+        inputs = [c[0] for c in cases[:map_batch_size]]; targets = [c[1] for c in cases[:map_batch_size]]
         feeder = {self.input: inputs} #, self.target: targets}
         outputs = sess.run(self.predictor, feeder)
 
         self.grabvars = []
-        print(map_layers)
+
         for i in range(len(map_layers)):
             for j in range(len(map_grabvars)):
                 #ann.gen_probe(i,'wgt',('hist','avg'))
@@ -340,6 +340,9 @@ def gradient_descent(epochs=500,dims=[2],cman=None,lrate=0.03,showint=300,mbs=No
     # dims=[4,nbits,2]
     #
     print(dims)
+    random.seed(123)
+    np.random.seed(123)
+    tf.set_random_seed(123)
 
 
     ann = Gann(dims=dims,cman=cman,lrate=lrate,showint=showint,mbs=mbs,vint=vint,softmax=sm,output_activation_function=output_activation_function,hidden_activation_function=hidden_activation_function,cost_function=cost_function,init_weight_range=init_weight_range,init_bias_range=init_bias_range)

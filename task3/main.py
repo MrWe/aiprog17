@@ -8,8 +8,6 @@ import random
 random.seed(123)
 np.random.seed(123)
 tf.set_random_seed(123)
-import sys
-import mnist_basics as mnist
 
 file_sets = ["wine", "glass", "gamma", "yeast"];
 
@@ -119,6 +117,9 @@ def main():
 
 
 if __name__ == '__main__':
+    random.seed(123)
+    np.random.seed(123)
+    tf.set_random_seed(123)
 
     main()
     while(True):
