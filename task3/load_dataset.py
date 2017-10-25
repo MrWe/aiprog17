@@ -61,6 +61,7 @@ def load_data(file, cfrac):
         for k in range(len(features[n])):
             features[n][k] = (features[n][k] - means[k]) / std[k]
         lines.append([features[n], labels[n]])
+
     return lines
 
 def quickrun(operators, grabbed_vars=None, dir='probeview', session=None, feed_dict=None, step=1, show_interval=1):

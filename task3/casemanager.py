@@ -32,8 +32,8 @@ class Caseman():
         separator1 = round(len(self.cases) * self.training_fraction)
         separator2 = separator1 + round(len(self.cases)*self.validation_fraction)
         self.training_cases = ca[0:separator1]
-        self.validation_cases = ca[separator1:separator2]
-        self.testing_cases = ca[separator2:]
+        self.validation_cases = ca[separator1:separator2] if self.validation_fraction>0 else ca
+        self.testing_cases = ca[separator2:] if self.test_fraction>0 else ca
 
     def get_training_cases(self):
         np.random.shuffle(self.training_cases)

@@ -7,6 +7,11 @@ import os  # For starting up tensorboard from inside python
 import matplotlib.pyplot as PLT
 import scipy.cluster.hierarchy as SCH  # Needed for dendrograms
 import numpy.random as NPR
+import random
+
+random.seed(123)
+np.random.seed(123)
+tf.set_random_seed(123)
 
 # ****** SESSION HANDLING *******
 

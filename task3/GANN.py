@@ -262,7 +262,8 @@ class Gann():
         for n in inputs:
             labels.append(TFT.bits_to_str(n))
 
-        #TFT.dendrogram(flat_grabvals, labels)
+        PLT.figure()
+        TFT.dendrogram(flat_grabvals, labels)
 
         TFT.hinton_plot(np.array(inputs), title='Input pattern')
         TFT.hinton_plot(outputs, title='Output pattern')
