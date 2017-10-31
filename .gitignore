@@ -102,3 +102,6 @@ ENV/
 
 # mnist
 .mnist-zip/
+
+# Node modules
+.task4/node_modules/
