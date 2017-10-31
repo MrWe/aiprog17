@@ -1,0 +1,9 @@
+{
+  "name": "p5Projects",
+  "projects": [
+    "pacman",
+    "drop",
+    "triangles",
+    "self_organizing_map"
+  ]
+}
