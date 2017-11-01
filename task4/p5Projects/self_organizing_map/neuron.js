@@ -1,7 +1,7 @@
 class Neuron {
   constructor(weights) {
     this.weights = weights;
-    this.neighbours = [];
+
   }
 
   show(){
@@ -18,16 +18,6 @@ class Neuron {
     return dist(this.weights.x,this.weights.y,point.x,point.y);
   }
 
-  add_neighbour(neuron){
-    for (var i = 0; i < this.neighbours.length; i++) {
-      if(this.neighbours[i] === neuron){
-        return;
-      }
-    }
-    this.neighbours.push(neuron);
-    if(this.neighbours.length === 3){
-      this.neighbours.splice(0,1);
-    }
 
-  }
+
 }
