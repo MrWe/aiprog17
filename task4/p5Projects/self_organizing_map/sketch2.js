@@ -30,11 +30,13 @@ function setup() {
 		fill(255,0,0);
 		noStroke();
 		ellipse(x.x,x.y,15,15);
+		
 
 		let nearest_neuron = neurons[0];
 		let distance = Infinity;
 
 		neurons.forEach((y)=>{
+
 			let tmp_dist = dist(x.x,x.y, y.x, y.y);
 			if(tmp_dist < distance){
 				nearest_neuron = y;

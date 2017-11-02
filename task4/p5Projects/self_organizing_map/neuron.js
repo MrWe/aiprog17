@@ -1,6 +1,7 @@
 class Neuron {
   constructor(weights) {
     this.weights = weights;
+    this.assigned_city;
 
   }
 
@@ -17,7 +18,6 @@ class Neuron {
   distance_to(point){
     return dist(this.weights.x,this.weights.y,point.x,point.y);
   }
-
 
 
 }
