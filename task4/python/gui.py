@@ -16,29 +16,31 @@ class App(tk.Frame):
     self.createWidgets()
     self._createCanvas()
 
-
   def restart(self):
     self.init_neuron_radius = 50
-    self.learning_rate = 0.9
-    self.epochs = 500
+    self.learning_rate = 1.1
+    self.lr_reduction_factor = 0.8
+    self.epochs = 1500
     self.neurons_multiplier = 3
     self.num_neighbours = 20
+    self.steps = 5
+    self.path_length = 0
     self.self_org_map = som
     self.cities = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
     self.draw_points(self.cities)
     self.on_start_press()
 
-
   #NOTE: gui is looked until this is finished
   def on_start_press(self):
-    print(self.entry.get())
     for i in range(self.epochs):
-      self.neurons = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.num_neighbours)
+      self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       self.show_board(self.neurons)
-      self.learning_rate *= 0.995
-
+      self.learning_rate *= 0.999
+      if(i%50 == 0):
+        self.num_neighbours -= 1
+    print(self.path_length)
 
   def init_neurons(self):
     num_neurons = len(self.cities) * self.neurons_multiplier
@@ -61,18 +63,15 @@ class App(tk.Frame):
     self.entry.insert(0,'1')
     self.entry.grid()
 
-
   def _createCanvas(self):
     self.canvas = tk.Canvas(width = self.width, height = self.height,
                             bg = "grey" )
     self.canvas.grid(row=0, column=0, sticky='nsew')
 
-
   def show_board(self, points):
     self.canvas.delete("all")
     self.draw_polygon(points)
     self.draw_points(self.cities)
-
 
 
   def draw_points(self, points, fill='#ff0000'):
@@ -83,7 +82,6 @@ class App(tk.Frame):
   def draw_polygon(self,points):
     self.canvas.create_polygon(points, outline='#000000', fill='', width=1, state='disabled')
     self.draw_points(self.neurons,'#0000ff')
-
 
 
 if __name__ == "__main__":
