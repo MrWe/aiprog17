@@ -34,8 +34,8 @@ def update_neurons(city, neurons, index, lr, lr_reduction_factor, num_neighbours
 def update_neuron(city, neurons, index, lr):
     dir_x = lr * (neurons[index][0] - city[0])
     dir_y = lr * (neurons[index][1] - city[1])
-    neurons[index][0] -= dir_x*lr
-    neurons[index][1] -= dir_y*lr
+    neurons[index][0] -= dir_x
+    neurons[index][1] -= dir_y
 
 def get_path_length(neurons):
     length = 0

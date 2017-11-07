@@ -19,8 +19,8 @@ class App(tk.Frame):
   def restart(self):
     self.init_neuron_radius = 50
     self.learning_rate = 1.1
-    self.lr_reduction_factor = 0.7
-    self.epochs = 1500
+    self.lr_reduction_factor = 0.6
+    self.epochs = 2000
     self.neurons_multiplier = 3
     self.num_neighbours = 50
     self.steps = 20
@@ -37,7 +37,7 @@ class App(tk.Frame):
       self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       self.show_board(self.neurons)
-      self.learning_rate *= 0.9995
+      self.learning_rate *= 0.999
       if(i%100 == 0):
         self.num_neighbours -= 1
     self.re_mapped_neurons = []
