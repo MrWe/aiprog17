@@ -1,5 +1,4 @@
 import random
-import numpy as np
 
 def run(neurons, cities, lr, lr_reduction_factor, num_neighbours, steps=10):
     for i in range(steps):

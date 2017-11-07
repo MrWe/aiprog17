@@ -10,7 +10,7 @@ def read_file(file, screen_width, screen_height):
     for line in f.readlines():
         l = line.strip().split(' ')
         if(len(l) != 3):
-            break
+            continue
         x.append(float(l[1]))
         y.append(float(l[2]))
 
@@ -22,6 +22,6 @@ def read_file(file, screen_width, screen_height):
 
         points.append([curr_x,curr_y])
 
-    return points
+    return points, x_max, x_min, y_max, y_min
 
 

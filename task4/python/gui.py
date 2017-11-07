@@ -19,14 +19,14 @@ class App(tk.Frame):
   def restart(self):
     self.init_neuron_radius = 50
     self.learning_rate = 1.1
-    self.lr_reduction_factor = 0.8
+    self.lr_reduction_factor = 0.7
     self.epochs = 1500
     self.neurons_multiplier = 3
-    self.num_neighbours = 20
-    self.steps = 5
+    self.num_neighbours = 50
+    self.steps = 20
     self.path_length = 0
     self.self_org_map = som
-    self.cities = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
+    self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
     self.draw_points(self.cities)
     self.on_start_press()
@@ -37,10 +37,16 @@ class App(tk.Frame):
       self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       self.show_board(self.neurons)
-      self.learning_rate *= 0.999
-      if(i%50 == 0):
+      self.learning_rate *= 0.9995
+      if(i%100 == 0):
         self.num_neighbours -= 1
-    print(self.path_length)
+    self.re_mapped_neurons = []
+    for i in range(len(self.neurons)):
+      x = hp.translate(self.neurons[i][0], 10, self.width-10, self.min_x, self.max_x)
+      y = hp.translate(self.neurons[i][1], 10, self.height-10, self.min_y, self.max_y)
+      self.re_mapped_neurons.append([x,y])
+    print(self.self_org_map.get_path_length(self.re_mapped_neurons))
+
 
   def init_neurons(self):
     num_neurons = len(self.cities) * self.neurons_multiplier
