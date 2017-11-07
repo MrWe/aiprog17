@@ -4,14 +4,8 @@ let num_neurons;
 let dimension = 2;
 let init_decay = 0.3;
 let decay = init_decay;
-let sigma = num_neurons;
-let sigma_now;
-let tau = 500;
-let eta = 0.3;
-let eta_now;
 let neurons_near_point = []
-
-
+let assignments;
 let learning_rate = 0.9;
 let file;
 
@@ -22,6 +16,7 @@ function preload(){
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	background(0);
+	assignments = {};
 
 	p = sanitize_data(file);
 
@@ -30,7 +25,10 @@ function setup() {
 	y_points = p.y;
 
 	for (let i = 0; i < num_neurons; i++) {
-		points.push(new City(createVector(x_points[i],y_points[i])));
+		let new_city = new City(createVector(x_points[i],y_points[i]));
+		new_city.hash_city();
+
+		points.push(new_city);
 	}
 
 	for (var i = 0; i < num_neurons*3; i++) {
@@ -42,7 +40,7 @@ function setup() {
 }
 
 function draw() {
-	frameRate(120)
+	frameRate(60)
 	background(0);
 	decay *= 0.999;
 
@@ -50,7 +48,7 @@ function draw() {
 		fill(255,0,0);
 		noStroke();
 		ellipse(points[i].coords.x, points[i].coords.y,15,15);
-
+		update_assignment(points[i]);
 	}
 
 	let path_length = 0;
@@ -77,8 +75,33 @@ function draw() {
 	textSize(20);
 	text(floor(path_length), 20, 20);
 
-
 	discriminant_function()
+}
+
+
+
+
+function update_assignment(p){
+	let nearest_neuron = null;
+	let that_distance = Infinity;
+	let index = 0;
+
+	for (let i = 0; i < neurons.length; i++) {
+		let d = neurons[i].distance_to(p.coords);
+		if(d < that_distance){
+			nearest_neuron=neurons[i];
+			that_distance = d;
+			index = i;
+		}
+	}
+
+	if (!assignments[p.id]) {
+    assignments[p.id] = [];
+		assignments[p.id].push(nearest_neuron);
+  }
+	else{
+		assignments[p.id][0] = nearest_neuron;
+	}
 }
 
 
@@ -87,59 +110,57 @@ function discriminant_function(){
 
 	let rand_num = floor(random(points.length));
 
-	let p = points[rand_num].coords;
+	let p = points[rand_num];
 
-	let nearest_neuron = null;
-	let that_distance = Infinity;
-	let index = 0;
+	let nearest_neuron = assignments[p.id][0]
 
-	for (let i = 0; i < neurons.length; i++) {
-		let d = neurons[i].distance_to(p);
-		if(d < that_distance){
-			nearest_neuron=neurons[i];
-			that_distance = d;
-			index = i;
-		}
-	}
+	let index = neurons.indexOf(nearest_neuron);
 
-	cooperative_Process(nearest_neuron, that_distance, index, p);
+	cooperative_Process(nearest_neuron, index, p.coords);
 
 
 
 }
 
-function remove_neurons(){
-
-	for (var i = 0; i < points.length; i++) {
-		p = points[i].coords;
-		nearest_neuron = null;
-		that_distance = Infinity;
-		index = 0;
-
-		for (let i = 0; i < neurons.length; i++) {
-			d = neurons[i].distance_to(p);
-			if(d < that_distance){
-				nearest_neuron=neurons[i];
-				that_distance = d;
-				index = i;
-
-			}
-		}
-		if(neurons_near_point.indexOf(nearest_neuron) === -1){
-			neurons_near_point.push(nearest_neuron);
-
-		}
-	}
-
-	let temp = [];
+function remove_neurons(values){
 
 	for (var i = neurons.length-1; i >= 0; i--) {
-		if(neurons_near_point.indexOf(neurons[i]) === -1){
-			temp.push(neurons[i]);
+
+		if(values.indexOf(neurons[i]) === -1){
 			neurons.splice(i,1);
-			break;
 		}
 	}
+
+	// for (var i = 0; i < points.length; i++) {
+	// 	p = points[i].coords;
+	// 	nearest_neuron = null;
+	// 	that_distance = Infinity;
+	// 	index = 0;
+	//
+	// 	for (let i = 0; i < neurons.length; i++) {
+	// 		d = neurons[i].distance_to(p);
+	// 		if(d < that_distance){
+	// 			nearest_neuron=neurons[i];
+	// 			that_distance = d;
+	// 			index = i;
+	//
+	// 		}
+	// 	}
+	// 	if(neurons_near_point.indexOf(nearest_neuron) === -1){
+	// 		neurons_near_point.push(nearest_neuron);
+	//
+	// 	}
+	// }
+	//
+	// let temp = [];
+	//
+	// for (var i = neurons.length-1; i >= 0; i--) {
+	// 	if(neurons_near_point.indexOf(neurons[i]) === -1){
+	// 		temp.push(neurons[i]);
+	// 		neurons.splice(i,1);
+	// 		break;
+	// 	}
+	// }
 }
 
 function add_neuron_on_stuck_city(){
@@ -169,7 +190,7 @@ function add_neuron_on_stuck_city(){
 	}
 }
 
-function cooperative_Process(neuron, that_distance, index, point){
+function cooperative_Process(neuron, index, point){
 
 	let dir_x = learning_rate * (neuron.weights.x - point.x);
 	let dir_y = learning_rate * (neuron.weights.y - point.y);
@@ -179,7 +200,7 @@ function cooperative_Process(neuron, that_distance, index, point){
 	let marker = index;
 	let extra_decay = 1
 
-	for (var i = 1; i < 2; i++) {
+	for (var i = 1; i < 6; i++) {
 		let dir_x = learning_rate * (neurons[(marker+i)%(neurons.length-1)].weights.x - point.x);
 		let dir_y = learning_rate * (neurons[(marker+i)%(neurons.length-1)].weights.y - point.y);
 		neurons[(marker+i)%(neurons.length-1)].weights.x -= dir_x*decay*extra_decay;
@@ -189,7 +210,7 @@ function cooperative_Process(neuron, that_distance, index, point){
 	marker = index;
 
 	extra_decay = 1
-	for (var i = 1; i > 0; i--) {
+	for (var i = 1; i > 6; i--) {
 		marker--;
 		if(marker < 0){
 			marker = neurons.length-1;
@@ -231,9 +252,13 @@ function sanitize_data(data){
 }
 
 function mousePressed(){
-	for (var i = 0; i < num_neurons; i++) {
-		remove_neurons();
-		add_neuron_on_stuck_city();
-	}
+
+	let values = Object.keys(assignments).map(function(key){
+    return assignments[key][0];
+	});
+
+	remove_neurons(values);
+	//add_neuron_on_stuck_city();
+
 }
 
