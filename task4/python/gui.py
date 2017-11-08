@@ -20,6 +20,7 @@ class App(tk.Frame):
     self.width = 700
     self.height = 800
     self.grid()
+    self.checkboxValue = tk.IntVar()
     self.createWidgets()
     self._createCanvas()
 
@@ -35,11 +36,12 @@ class App(tk.Frame):
     self.self_org_map = tsp_som
     self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
+
     self.draw_points(self.cities)
     self.on_start_press()
 
   def start_mnist(self):
-    self.num_neurons = 100
+    self.num_neurons = 150
     self.num_weights = 784
     #ascii_neurons = main(self.num_neurons, self.num_weights)
 
@@ -53,11 +55,11 @@ class App(tk.Frame):
 
       dist_threshold = 199920;
 
-    for i in range(3000):
+    for i in range(10000):
       root.update()
       neurons = run(neurons, features, 0.4, 0.7, dist_threshold, steps=1)
-      dist_threshold *= 0.8
-      if(i % 100 == 0):
+      dist_threshold *= 0.7
+      if(i % 100 == 0 and self.checkboxValue.get() == 1):
         neurons = self.sort_neurons(neurons)
 
         ascii_neurons = []
@@ -69,12 +71,14 @@ class App(tk.Frame):
         self.show_mnist(ascii_neurons, self.canvas)
     assignments = assign_label(neurons, features, labels)
 
-    for j in range(100000):
+    num_correct_classifications = 0
+
+    for j in range(10000):
       root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
-      if(j % 1000 == 0):
+      if(j % 1000 == 0 and self.checkboxValue.get() == 1):
         ascii_neurons = []
         for p in range(len([image])):
           ascii_neuron = []
@@ -87,6 +91,11 @@ class App(tk.Frame):
               ascii_neuron.append([neurons[classify_image(neurons, image)[1]]][p][k:k+28])
           ascii_neurons.append(ascii_neuron)
         self.show_mnist(ascii_neurons, self.canvas2)
+      if(labels[assignments[classify_image(neurons, image)[1]][1]] == label):
+        num_correct_classifications += 1
+    print("Number of correct:", num_correct_classifications )
+    print("Total number of classifications:", j)
+    print("Error rate:", num_correct_classifications / j)
       # print("Label: ", label)
       # print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
       #print((label,assignments[classify_image(neurons, image)[1]][1]))
@@ -149,7 +158,8 @@ class App(tk.Frame):
     for i in range(self.epochs):
       self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
-      self.show_board(self.neurons)
+      if(self.checkboxValue.get() == 1):
+        self.show_board(self.neurons)
       self.learning_rate *= 0.999
       if(i%100 == 0):
         self.num_neighbours -= 1
@@ -184,6 +194,9 @@ class App(tk.Frame):
     self.entry.pack()
     self.entry.insert(0,'1')
     self.entry.grid()
+
+    self.visualizeCheckbutton = tk.Checkbutton(text="Enable visualations", variable=self.checkboxValue)
+    self.visualizeCheckbutton.grid()
 
   def _createCanvas(self):
     self.canvas = tk.Canvas(width = self.width, height = self.height,
