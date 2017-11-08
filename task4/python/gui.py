@@ -53,9 +53,9 @@ class App(tk.Frame):
 
       dist_threshold = 199920;
 
-    for i in range(2000):
+    for i in range(4000):
       root.update()
-      neurons = run(neurons, features, 0.5, 0.7, dist_threshold, steps=1)
+      neurons = run(neurons, features, 0.4, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.8
       if(i % 100 == 0):
         neurons = self.sort_neurons(neurons)
@@ -67,6 +67,19 @@ class App(tk.Frame):
               ascii_neuron.append(neurons[p][k:k+28])
           ascii_neurons.append(ascii_neuron)
         self.show_mnist(ascii_neurons)
+    assignments = assign_label(neurons, features, labels)
+
+    for j in range(100):
+      random_image_index = random.randint(0, len(features)-1)
+      image = features[random_image_index]
+      label = labels[random_image_index]
+      print("Label: ", label)
+      print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
+      #print((label,assignments[classify_image(neurons, image)[1]][1]))
+
+
+    # for l in range(10):
+    #   print(labels[assignments[l][1]])
     print("FERDIG!")
 
 
@@ -168,6 +181,9 @@ class App(tk.Frame):
     self.canvas = tk.Canvas(width = self.width, height = self.height,
                             bg = "grey" )
     self.canvas.grid(row=0, column=0, sticky='nsew')
+    self.canvas2 = tk.Canvas(width = self.width, height = self.height,
+                            bg = "grey" )
+    self.canvas2.grid(row=0, column=1, sticky='nsew')
 
   def show_board(self, points):
     self.canvas.delete("all")
@@ -187,6 +203,6 @@ class App(tk.Frame):
 
 if __name__ == "__main__":
   root = tk.Tk()
-  root.geometry( "1000x1000" )
+  root.geometry( "1500x1000" )
   app = App(root)
   root.mainloop()
