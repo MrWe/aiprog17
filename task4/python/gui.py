@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 import tkinter as tk
-import som as som
+import tsp_som as tsp_som
+import sys
+#sys.path.append('./mnist')
+#sys.path.append('./mnist/mnist_set')
+from mnist.main import *
+from mnist.helpers import *
+from mnist.som import *
 import read_file as rf
 import math
 import helper as hp
@@ -16,7 +22,7 @@ class App(tk.Frame):
     self.createWidgets()
     self._createCanvas()
 
-  def restart(self):
+  def start_tsp(self):
     self.init_neuron_radius = 50
     self.learning_rate = 1.1
     self.lr_reduction_factor = 0.6
@@ -25,13 +31,20 @@ class App(tk.Frame):
     self.num_neighbours = 50
     self.steps = 20
     self.path_length = 0
-    self.self_org_map = som
+    self.self_org_map = tsp_som
     self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
     self.draw_points(self.cities)
     self.on_start_press()
 
-  #NOTE: gui is looked until this is finished
+  def start_mnist(self):
+      self.num_neurons = 50
+      self.num_weights = 784
+      main(self.num_neurons, self.num_weights)
+      print("Yolo")
+
+
+  #NOTE: gui is locked until this is finished
   def on_start_press(self):
     for i in range(self.epochs):
       self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
@@ -58,8 +71,11 @@ class App(tk.Frame):
     return neurons
 
   def createWidgets(self):
-    self.startButton = tk.Button(text="Restart", command=lambda : self.restart())
+    self.startButton = tk.Button(text="Start TSP", command=lambda : self.start_tsp())
     self.startButton.grid()
+
+    self.mnistButton = tk.Button(text="Start MNIST", command=lambda : self.start_mnist())
+    self.mnistButton.grid()
 
     self.exitButton = tk.Button(text="Exit", command=lambda : exit())
     self.exitButton.grid()
