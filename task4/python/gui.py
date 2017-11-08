@@ -16,8 +16,8 @@ class App(tk.Frame):
   def __init__( self, parent):
     tk.Frame.__init__(self, parent)
 
-    self.width = 500
-    self.height = 500
+    self.width = 1000
+    self.height = 800
     self.grid()
     self.createWidgets()
     self._createCanvas()
@@ -38,14 +38,63 @@ class App(tk.Frame):
     self.on_start_press()
 
   def start_mnist(self):
-      self.num_neurons = 50
-      self.num_weights = 784
-      ascii_neurons = main(self.num_neurons, self.num_weights)
+    self.num_neurons = 100
+    self.num_weights = 784
+    #ascii_neurons = main(self.num_neurons, self.num_weights)
 
-      for neuron in ascii_neurons:
-          for line in neuron:
-              print(line)
-          print("\n")
+    neurons = generate_neurons(self.num_neurons, self.num_weights)
+    features = []
+    labels = []
+    for label, feature in read():
+      labels.append(label)
+      f = np.array(feature) / 255
+      features.append(f.flatten().tolist())
+
+      dist_threshold = 199920;
+
+    for i in range(2000):
+      root.update()
+      neurons = run(neurons, features, 0.08, 0.7, dist_threshold, steps=1)
+      dist_threshold *= 0.8
+      if(i % 1999 == 0):
+        ascii_neurons = []
+        for p in range(len(neurons)):
+          ascii_neuron = []
+          for k in range(0,784,28):
+              ascii_neuron.append(neurons[p][k:k+28])
+          ascii_neurons.append(ascii_neuron)
+        self.show_mnist(ascii_neurons)
+    print("FERDIG!")
+
+
+
+
+  def show_mnist(self, neurons):
+    self.canvas.delete("all")
+    size = 3
+    offset_x = 0
+    offset_y = 0
+
+    for k in range(len(neurons)):
+      x = 0
+      y = 0
+      for i in range(len(neurons[k])):
+        x = 0
+        for j in range(len(neurons[k][i])):
+          coords = (x+offset_x,y + offset_y,offset_x+x+size,offset_y+y+size)
+          x += size
+          curr_fill = neurons[k][i][j] * 255
+          curr_fill = '{0:06X}'.format(int(curr_fill))
+          fill = "#" + curr_fill
+          self.canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
+        y += size
+      offset_x += size * 28
+      if(offset_x + size * 28 >= self.width):
+        offset_y += size * 28
+        offset_x = 0
+
+
+
 
 
   #NOTE: gui is locked until this is finished

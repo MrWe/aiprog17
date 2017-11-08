@@ -18,11 +18,13 @@ def main(num_neurons=50, num_weights=784):
         f = np.array(feature) / 255
         features.append(f.flatten().tolist())
 
+
+
     dist_threshold = 199920;
 
 
 
-    for i in range(100):
+    for i in range(10000):
         neurons = run(neurons, features, 0.01, 0.9, dist_threshold, steps=1)
         dist_threshold *= 0.7
 
