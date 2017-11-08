@@ -40,8 +40,12 @@ class App(tk.Frame):
   def start_mnist(self):
       self.num_neurons = 50
       self.num_weights = 784
-      main(self.num_neurons, self.num_weights)
-      print("Yolo")
+      ascii_neurons = main(self.num_neurons, self.num_weights)
+
+      for neuron in ascii_neurons:
+          for line in neuron:
+              print(line)
+          print("\n")
 
 
   #NOTE: gui is locked until this is finished
