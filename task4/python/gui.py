@@ -17,7 +17,7 @@ class App(tk.Frame):
   def __init__( self, parent):
     tk.Frame.__init__(self, parent)
 
-    self.width = 1000
+    self.width = 700
     self.height = 800
     self.grid()
     self.createWidgets()
@@ -53,7 +53,7 @@ class App(tk.Frame):
 
       dist_threshold = 199920;
 
-    for i in range(4000):
+    for i in range(3000):
       root.update()
       neurons = run(neurons, features, 0.4, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.8
@@ -66,15 +66,29 @@ class App(tk.Frame):
           for k in range(0,784,28):
               ascii_neuron.append(neurons[p][k:k+28])
           ascii_neurons.append(ascii_neuron)
-        self.show_mnist(ascii_neurons)
+        self.show_mnist(ascii_neurons, self.canvas)
     assignments = assign_label(neurons, features, labels)
 
-    for j in range(100):
+    for j in range(100000):
+      root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
-      print("Label: ", label)
-      print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
+      if(j % 1000 == 0):
+        ascii_neurons = []
+        for p in range(len([image])):
+          ascii_neuron = []
+          for k in range(0,784,28):
+              ascii_neuron.append([image][p][k:k+28])
+          ascii_neurons.append(ascii_neuron)
+        for p in range(len([neurons[classify_image(neurons, image)[1]]])):
+          ascii_neuron = []
+          for k in range(0,784,28):
+              ascii_neuron.append([neurons[classify_image(neurons, image)[1]]][p][k:k+28])
+          ascii_neurons.append(ascii_neuron)
+        self.show_mnist(ascii_neurons, self.canvas2)
+      # print("Label: ", label)
+      # print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
       #print((label,assignments[classify_image(neurons, image)[1]][1]))
 
 
@@ -105,13 +119,10 @@ class App(tk.Frame):
     return neurons
 
 
+  def show_mnist(self, neurons, canvas, size=3):
+    canvas.delete("all")
 
-
-
-
-  def show_mnist(self, neurons):
-    self.canvas.delete("all")
-    size = 3
+    size = size
     offset_x = 0
     offset_y = 0
 
@@ -125,15 +136,12 @@ class App(tk.Frame):
           x += size
           curr_fill = (int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255))
           fill = '#%02x%02x%02x' % curr_fill
-          self.canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
+          canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
         y += size
       offset_x += size * 28
-      if(offset_x + size * 28 >= self.width):
+      if(offset_x + size * 28 >= self.width+10):
         offset_y += size * 28
         offset_x = 0
-
-
-
 
 
   #NOTE: gui is locked until this is finished
