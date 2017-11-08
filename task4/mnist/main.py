@@ -1,4 +1,4 @@
-#import networkx as nx
+import networkx as nx
 import numpy as np
 import helpers as hp
 import mnist_reader as mr
@@ -6,7 +6,7 @@ import som
 
 
 
-def main(num_neurons=10, num_weights=784):
+def main(num_neurons=50, num_weights=784):
     neurons = hp.generate_neurons(num_neurons, num_weights)
     features = []
     labels = []
@@ -15,16 +15,19 @@ def main(num_neurons=10, num_weights=784):
         f = np.array(feature) / 255
         features.append(f.flatten().tolist())
 
+    dist_threshold = 199920;
+
 
 
     for i in range(5000):
+        neurons = som.run(neurons, features, 0.01, 0.9, dist_threshold, steps=1)
+        dist_threshold *= 0.7
 
-        neurons, update_index = som.run(neurons, features, 0.0001, 0.9999, 1, steps=1)
 
     lol = []
     for p in range(len(neurons)):
         for j in range(len(neurons[0])):
-            if(neurons[p][j] < 0.01):
+            if(neurons[p][j] < 0.3):
                 neurons[p][j] = '0'
             else:
                 neurons[p][j] = '-'
