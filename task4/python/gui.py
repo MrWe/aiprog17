@@ -55,13 +55,11 @@ class App(tk.Frame):
 
     for i in range(2000):
       root.update()
-      neurons = run(neurons, features, 0.08, 0.7, dist_threshold, steps=1)
+      neurons = run(neurons, features, 0.5, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.8
       if(i % 100 == 0):
-        #neurons = self.sort_neurons(neurons)
-        sorted_neurons_on_all_indices = []
-        for i in range(len(neurons)):
-          sorted_neurons_on_all_indices.append(self.sort_neurons(i, neurons))
+        neurons = self.sort_neurons(neurons)
+
         ascii_neurons = []
         for p in range(len(neurons)):
           ascii_neuron = []
@@ -72,20 +70,27 @@ class App(tk.Frame):
     print("FERDIG!")
 
 
-  def sort_neurons(self, index, neurons):
+  def sort_neurons(self, neurons):
+
     sorted_array = []
-    sorted_array.append(neurons[index])
-    for i in range(0, len(neurons)):
-      if i != index:
+    sorted_array.append(neurons[0])
+
+    for i in range(1, len(neurons)-2):
         inserted = False
-        for j in range(len(sorted_array)):
-          if euclideanDistance(neurons[index], neurons[i]) < euclideanDistance(neurons[index], sorted_array[j]):
-            sorted_array.insert(j, neurons[i])
-            inserted = True
-            break
-        if(not inserted):
-          sorted_array.append(neurons[i])
-    return sorted_array
+        for j in range(i+2, len(neurons)):
+          if euclideanDistance(neurons[i], neurons[i+1]) > euclideanDistance(neurons[i], neurons[j]):
+            best = neurons[j]
+            worst = neurons[i+1]
+            neurons[i+1] = best
+            neurons[j] = worst
+
+        #     sorted_array.insert(j, neurons[i])
+        #     inserted = True
+        #     break
+        # if(not inserted):
+        #   sorted_array.append(neurons[i])
+    return neurons
+
 
 
 
@@ -105,9 +110,8 @@ class App(tk.Frame):
         for j in range(len(neurons[k][i])):
           coords = (x+offset_x,y + offset_y,offset_x+x+size,offset_y+y+size)
           x += size
-          curr_fill = neurons[k][i][j] * 255
-          curr_fill = '{0:06X}'.format(int(curr_fill))
-          fill = "#" + curr_fill
+          curr_fill = (int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255))
+          fill = '#%02x%02x%02x' % curr_fill
           self.canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
         y += size
       offset_x += size * 28

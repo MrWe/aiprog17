@@ -52,7 +52,3 @@ def update_neighbouring_neurons(image, curr_neuron, neurons, lr, dist_threshold)
         dist = euclideanDistance(neurons[i], neurons[curr_neuron])
         if(dist <= dist_threshold):
             update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))* 0.1)
-
-
-def compare(neuron0, neuron1, neuron2):
-    return euclideanDistance(neuron0, neuron1) > euclideanDistance(neuron0, neuron2)
