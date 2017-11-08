@@ -55,7 +55,7 @@ class App(tk.Frame):
 
     for i in range(2000):
       root.update()
-      neurons = run(neurons, features, 0.2, 0.7, dist_threshold, steps=1)
+      neurons = run(neurons, features, 0.5, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.8
       if(i % 100 == 0):
         neurons = self.sort_neurons(neurons)
@@ -110,9 +110,8 @@ class App(tk.Frame):
         for j in range(len(neurons[k][i])):
           coords = (x+offset_x,y + offset_y,offset_x+x+size,offset_y+y+size)
           x += size
-          curr_fill = neurons[k][i][j] * 255
-          curr_fill = '{0:06X}'.format(int(curr_fill))
-          fill = "#" + curr_fill
+          curr_fill = (int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255))
+          fill = '#%02x%02x%02x' % curr_fill
           self.canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
         y += size
       offset_x += size * 28
