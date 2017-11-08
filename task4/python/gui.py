@@ -2,14 +2,15 @@
 import tkinter as tk
 import tsp_som as tsp_som
 import sys
-#sys.path.append('./mnist')
-#sys.path.append('./mnist/mnist_set')
 from mnist.main import *
 from mnist.helpers import *
 from mnist.som import *
 import read_file as rf
 import math
 import helper as hp
+from itertools import groupby
+from operator import itemgetter
+
 
 
 class App(tk.Frame):
@@ -56,7 +57,11 @@ class App(tk.Frame):
       root.update()
       neurons = run(neurons, features, 0.08, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.8
-      if(i % 1999 == 0):
+      if(i % 100 == 0):
+        #neurons = self.sort_neurons(neurons)
+        sorted_neurons_on_all_indices = []
+        for i in range(len(neurons)):
+          sorted_neurons_on_all_indices.append(self.sort_neurons(i, neurons))
         ascii_neurons = []
         for p in range(len(neurons)):
           ascii_neuron = []
@@ -65,6 +70,23 @@ class App(tk.Frame):
           ascii_neurons.append(ascii_neuron)
         self.show_mnist(ascii_neurons)
     print("FERDIG!")
+
+
+  def sort_neurons(self, index, neurons):
+    sorted_array = []
+    sorted_array.append(neurons[index])
+    for i in range(0, len(neurons)):
+      if i != index:
+        inserted = False
+        for j in range(len(sorted_array)):
+          if euclideanDistance(neurons[index], neurons[i]) < euclideanDistance(neurons[index], sorted_array[j]):
+            sorted_array.insert(j, neurons[i])
+            inserted = True
+            break
+        if(not inserted):
+          sorted_array.append(neurons[i])
+    return sorted_array
+
 
 
 
