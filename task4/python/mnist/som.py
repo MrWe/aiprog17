@@ -1,3 +1,4 @@
+import math
 import random
 import numpy as np
 #import helpers as hp
@@ -52,3 +53,31 @@ def update_neighbouring_neurons(image, curr_neuron, neurons, lr, dist_threshold)
         dist = euclideanDistance(neurons[i], neurons[curr_neuron])
         if(dist <= dist_threshold):
             update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))* 0.1)
+
+
+def assign_label(neurons, images, labels):
+    assigned_neurons = []
+    for i in range(len(neurons)):
+        current_best = (float('inf'), 0)
+        for j in range(1000):
+            random_image_index = random.randint(0, len(images)-1)
+            image = images[random_image_index]
+            label = labels[random_image_index]
+            curr_dist = euclideanDistance(neurons[i], image)
+            if(curr_dist < current_best[0]):
+                current_best = (curr_dist, random_image_index)
+        assigned_neurons.append(current_best)
+
+    return assigned_neurons
+
+
+def classify_image(neurons, image):
+    current_best = (float('inf'), 0)
+    for i in range(len(neurons)):
+        curr_dist = euclideanDistance(neurons[i], image)
+        if(curr_dist < current_best[0]):
+            current_best = (curr_dist, i)
+
+    return current_best
+
+
