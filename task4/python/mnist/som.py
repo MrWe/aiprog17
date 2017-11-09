@@ -4,8 +4,10 @@ import numpy as np
 #import helpers as hp
 from mnist.helpers import *
 
-def run(neurons, images, lr, lr_reduction_factor, dist_threshold, steps=1):
+random.seed(123)
 
+def run(neurons, images, lr, lr_reduction_factor, dist_threshold, steps=1):
+    random.seed(123)
     for i in range(steps):
         random_image = random.choice(images)
         closest_neuron = shortest_dist(random_image, neurons)
@@ -40,7 +42,7 @@ def update_neuron(image, neurons, index, lr):
     # neurons[index] = np.subtract(neurons[index],np.subtract(neurons[index], np.multiply(image, lr)))
     # neurons[index] = neurons[index].tolist()
     for i in range(len(neurons[index])):
-        neurons[index][i] -= lr * (neurons[index][i] - image[i])
+        neurons[index][i] -= (lr * (neurons[index][i] - image[i]))
 
 
 '''
@@ -52,10 +54,11 @@ def update_neighbouring_neurons(image, curr_neuron, neurons, lr, dist_threshold)
             continue
         dist = euclideanDistance(neurons[i], neurons[curr_neuron])
         if(dist <= dist_threshold):
-            update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))* 0.1)
+            update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))*0.05)
 
 
 def assign_label(neurons, images, labels):
+    random.seed(123)
     assigned_neurons = []
     for i in range(len(neurons)):
         current_best = (float('inf'), 0)
@@ -73,28 +76,23 @@ def assign_label(neurons, images, labels):
 
 def classify_image(neurons, labels, assignments, image):
     # votes = {}
-    # current_best = (float('inf'), 0)
     # for i in range(len(neurons)):
     #     curr_dist = euclideanDistance(neurons[i], image)
-    #     if(curr_dist < current_best[0]):
-    #         current_best = (curr_dist, i)
-    #         if(labels[assignments[i][1]] in votes):
-    #             votes[labels[assignments[i][1]]].append(curr_dist)
-    #         else:
-    #             votes[labels[assignments[i][1]]] = [curr_dist]
+    #     if(labels[assignments[i][1]] in votes):
+    #         votes[labels[assignments[i][1]]].append(curr_dist)
+    #     else:
+    #         votes[labels[assignments[i][1]]] = [curr_dist]
     # highest_voted_label = 0
     # vote = float('inf')
+    # print('\n')
     # for key in votes:
+    #     print(key, votes[key])
     #     curr_vote = np.average(votes[key])
     #     if(curr_vote < vote):
     #         vote = curr_vote
     #         highest_voted_label = key
     #
     # return (vote, highest_voted_label)
-
-
-
-
 
     current_best = (float('inf'), 0)
     for i in range(len(neurons)):

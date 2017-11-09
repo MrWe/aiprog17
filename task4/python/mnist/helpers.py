@@ -1,5 +1,7 @@
 import numpy as np
+import random
 def generate_neurons(num_neurons, num_weights):
+    random.seed(123)
     neurons = []
     for i in range(num_neurons):
         curr_weights = []
