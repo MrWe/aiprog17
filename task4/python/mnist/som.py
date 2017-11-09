@@ -71,7 +71,31 @@ def assign_label(neurons, images, labels):
     return assigned_neurons
 
 
-def classify_image(neurons, image):
+def classify_image(neurons, labels, assignments, image):
+    # votes = {}
+    # current_best = (float('inf'), 0)
+    # for i in range(len(neurons)):
+    #     curr_dist = euclideanDistance(neurons[i], image)
+    #     if(curr_dist < current_best[0]):
+    #         current_best = (curr_dist, i)
+    #         if(labels[assignments[i][1]] in votes):
+    #             votes[labels[assignments[i][1]]].append(curr_dist)
+    #         else:
+    #             votes[labels[assignments[i][1]]] = [curr_dist]
+    # highest_voted_label = 0
+    # vote = float('inf')
+    # for key in votes:
+    #     curr_vote = np.average(votes[key])
+    #     if(curr_vote < vote):
+    #         vote = curr_vote
+    #         highest_voted_label = key
+    #
+    # return (vote, highest_voted_label)
+
+
+
+
+
     current_best = (float('inf'), 0)
     for i in range(len(neurons)):
         curr_dist = euclideanDistance(neurons[i], image)

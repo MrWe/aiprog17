@@ -41,7 +41,7 @@ class App(tk.Frame):
     self.on_start_press()
 
   def start_mnist(self):
-    self.num_neurons = 150
+    self.num_neurons = 100
     self.num_weights = 784
     #ascii_neurons = main(self.num_neurons, self.num_weights)
 
@@ -55,7 +55,7 @@ class App(tk.Frame):
 
       dist_threshold = 199920;
 
-    for i in range(10000):
+    for i in range(4000):
       root.update()
       neurons = run(neurons, features, 0.4, 0.7, dist_threshold, steps=1)
       dist_threshold *= 0.7
@@ -78,24 +78,25 @@ class App(tk.Frame):
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
-      if(j % 1000 == 0 and self.checkboxValue.get() == 1):
+      if(j % 100 == 0 and self.checkboxValue.get() == 1):
         ascii_neurons = []
         for p in range(len([image])):
           ascii_neuron = []
           for k in range(0,784,28):
               ascii_neuron.append([image][p][k:k+28])
           ascii_neurons.append(ascii_neuron)
-        for p in range(len([neurons[classify_image(neurons, image)[1]]])):
+        for p in range(len([neurons[classify_image(neurons, labels, assignments, image)[1]]])):
           ascii_neuron = []
           for k in range(0,784,28):
-              ascii_neuron.append([neurons[classify_image(neurons, image)[1]]][p][k:k+28])
+              ascii_neuron.append([neurons[classify_image(neurons, labels, assignments, image)[1]]][p][k:k+28])
           ascii_neurons.append(ascii_neuron)
         self.show_mnist(ascii_neurons, self.canvas2)
-      if(labels[assignments[classify_image(neurons, image)[1]][1]] == label):
+      if(labels[assignments[classify_image(neurons, labels, assignments, image)[1]][1]] == label):
         num_correct_classifications += 1
     print("Number of correct:", num_correct_classifications )
     print("Total number of classifications:", j)
-    print("Error rate:", num_correct_classifications / j)
+    if(j > 0):
+      print("Error rate:", num_correct_classifications / j)
       # print("Label: ", label)
       # print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
       #print((label,assignments[classify_image(neurons, image)[1]][1]))
