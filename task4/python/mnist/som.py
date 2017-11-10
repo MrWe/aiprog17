@@ -3,15 +3,16 @@ import random
 import numpy as np
 #import helpers as hp
 from mnist.helpers import *
+from itertools import product
 
 
 
-def run(neurons, images, lr, lr_reduction_factor, dist_threshold, steps=1):
+def run(neurons, images, lr, lr_reduction_factor, dist_threshold, neighbour_value, steps=1):
 
     for i in range(steps):
         random_image = random.choice(images)
         closest_neuron_x, closest_neuron_y = shortest_dist(random_image, neurons)
-        update_neurons(random_image, neurons, closest_neuron_x, closest_neuron_y, lr, lr_reduction_factor, dist_threshold)
+        update_neurons(random_image, neurons, closest_neuron_x, closest_neuron_y, lr, lr_reduction_factor, dist_threshold, neighbour_value)
     return neurons
 
 
@@ -38,9 +39,14 @@ def shortest_dist(image_pixels, neurons):
                 index_y = y
     return index_x, index_y
 
-def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, dist_threshold):
+def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, dist_threshold, neighbour_value):
     update_neuron(image, neurons, index_x, index_y, lr)
-    update_neighbouring_neurons(image, index_x, index_y, neurons, 1, dist_threshold)
+
+
+    for neuron in get_neighbouring_neurons(image, index_x, index_y, neurons, 1, dist_threshold):
+
+        update_neuron(image, neurons, neuron[0], neuron[1], math.exp(- (neuron[2] * neuron[2]) / (neighbour_value * neighbour_value)))
+
 
 
 def update_neuron(image, neurons, index_x, index_y, lr):
@@ -53,14 +59,35 @@ def update_neuron(image, neurons, index_x, index_y, lr):
 '''
 curr_neuron = int = index of current neuron
 '''
-def update_neighbouring_neurons(image, curr_neuron_x, curr_neuron_y, neurons, lr, dist_threshold):
+def get_neighbouring_neurons(image, x, y, neurons, lr, dist_threshold):
+    neighbours = []
+    size = int(dist_threshold)
+    cell = (x,y)
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):
-            if(x == curr_neuron_x and y == curr_neuron_y):
-                continue
-            dist = euclideanDistance(neurons[x][y], neurons[curr_neuron_x][curr_neuron_y])
-            if(dist <= dist_threshold):
-                update_neuron(image, neurons, x, y, (1-translate(dist, 0, 199920, 0, 1))*0.1)
+            dist = manhattan_distance(cell, (x,y))
+            if(dist <= size):
+                neighbours.append((x,y,dist))
+    return neighbours
+
+
+    # for c in product(*(range(n-1, n+2) for n in cell)):
+    #     if c != cell and all(0 <= n < size for n in c):
+    #         yield c
+
+
+def manhattan_distance(start, end):
+    sx, sy = start
+    ex, ey = end
+    return abs(ex - sx) + abs(ey - sy)
+
+    # for x in range(len(neurons)):
+    #     for y in range(len(neurons[x])):
+    #         if(x == curr_neuron_x and y == curr_neuron_y):
+    #             continue
+    #         dist = euclideanDistance(neurons[x][y], neurons[curr_neuron_x][curr_neuron_y])
+    #         if(dist <= dist_threshold):
+    #             update_neuron(image, neurons, x, y, (1-translate(dist, 0, 199920, 0, 1))*0.1)
 
 
 def assign_label(neurons, images, labels):

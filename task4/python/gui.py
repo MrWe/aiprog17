@@ -44,12 +44,14 @@ class App(tk.Frame):
 
   def start_mnist(self):
 
+    self.pixel_size = 2
+
 
     print("Started mnist")
 
-    self.lr = 0.5
+    self.lr = 0.1
+    self.neighbour_value = 4
     #ascii_neurons = main(self.num_neurons, self.num_weights)
-
 
     features = []
     labels = []
@@ -58,64 +60,68 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
+
     self.num_neurons = 100
     self.num_weights = len(features[0])
 
     neurons = generate_neurons(self.num_neurons, self.num_weights)
 
-    dist_threshold = 199920;
+    self.width = len(neurons[0]) * len(f[0]) * self.pixel_size
+    self._createCanvas()
 
-    for i in range(3000):
+    dist_threshold = 4;
+
+    for i in range(10):
       root.update()
-      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, steps=1)
-      dist_threshold = dist_threshold * dist_threshold**(-i/30000)
+      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
+      dist_threshold = dist_threshold * dist_threshold**(-i/10000)
+      if(self.neighbour_value > 1):
+        self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
 
       if(i % 1 == 0 and self.checkboxValue.get() == 1):
-        #neurons = self.sort_neurons(neurons)
-
-        self.show_mnist(neurons, self.canvas)
-    # for i in range(len(neurons)):
-    #   for k in range(len(neurons[i])):
-    #     for l in range(len(neurons[i])):
-    #       if(neurons[i][l] < 0.2):
-    #         neurons[i][l] = 0.0
-    # ascii_neurons = []
-    # for p in range(len(neurons)):
-    #   ascii_neuron = []
-    #   for k in range(0,784,28):
-    #       ascii_neuron.append(neurons[p][k:k+28])
-    #   ascii_neurons.append(ascii_neuron)
-    # self.show_mnist(ascii_neurons, self.canvas)
+        print("Neighbour value:",self.neighbour_value)
+        flat_neurons = [y for x in neurons for y in x]
+        lined_neurons = []
+        for p in range(len(flat_neurons)):
+          lines = []
+          for k in range(0,784,28):
+              lines.append(flat_neurons[p][k:k+28])
+          lined_neurons.append(lines)
+        self.show_mnist(lined_neurons, self.canvas)
     assignments = assign_label(neurons, features, labels)
 
-
-
     num_correct_classifications = 0
+    print("Starting classifications")
 
     for j in range(1000):
       root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
-      if(j % 10 == 0 and self.checkboxValue.get() == 1):
+      if(j % 100 == 0 and self.checkboxValue.get() == 1):
 
-          #neuron = [[0.4232423, 0.23423423,.....], 6]
+        classification = classify_image(neurons, labels, assignments, image)
+        classified_neuron = neurons[classification[1]][classification[2]]
+        classifications = []
 
+        lined_neuron = []
+        for k in range(0,784,28):
+            lined_neuron.append(classified_neuron[k:k+28])
+        classifications.append(lined_neuron)
 
+        lined_image = []
+        for k in range(0,784,28):
+            lined_image.append(image[k:k+28])
+        classifications.append(lined_image)
 
-        '''for p in range(len([neurons[classify_image(neurons, labels, assignments, image)[1]]])):
-          neuron = []
-          for k in range(0,784,28):
-              neuron.append([neurons[classify_image(neurons, labels, assignments, image)[1]]][p][k:k+28])
-          neurons.append(neuron)
-          '''
-        self.show_mnist(neurons, self.canvas2)
+        self.show_mnist(classifications, self.canvas2)
+
       if(labels[assignments[classify_image(neurons, labels, assignments, image)[1]][1]] == label):
         num_correct_classifications += 1
     print("Number of correct:", num_correct_classifications )
     print("Total number of classifications:", j)
     if(j > 0):
-      print("Error rate:", num_correct_classifications / j)
+      print("Success rate:", num_correct_classifications / j)
       # print("Label: ", label)
       # print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
       #print((label,assignments[classify_image(neurons, image)[1]][1]))
@@ -149,7 +155,6 @@ class App(tk.Frame):
 
 
   def show_mnist(self, neurons, canvas, size=2):
-    print("Hello very showy")
     canvas.delete("all")
 
     offset_x = 0
@@ -161,6 +166,7 @@ class App(tk.Frame):
       for l in range(len(neurons[k])): #[[0.123125, 0.59238, ...],[0.123129, 0.948594, ...], ...] l er hvert nevron
         x = 0
         for j in range(len(neurons[k][l])): #[0.1239123, 0.2348934, ...] j er hver vekt
+
           coords = (x+offset_x,y + offset_y,offset_x+x+size,offset_y+y+size)
           x += size
 
@@ -168,11 +174,11 @@ class App(tk.Frame):
           fill = '#%02x%02x%02x' % curr_fill
 
           canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
-      y += size
-    offset_x += size * 28
-    if(offset_x + size * 28 >= self.width+10):
-      offset_y += size * 28
-      offset_x = 0
+        y += size
+      offset_x += size * 28
+      if(offset_x + size * 28 >= self.width+60):
+        offset_y += size * 28
+        offset_x = 0
 
 
   #NOTE: gui is locked until this is finished
@@ -192,7 +198,6 @@ class App(tk.Frame):
       x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
       y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
       self.re_mapped_cities.append([x,y])
-    print(self.self_org_map.get_path_length(self.re_mapped_cities))
 
 
 
