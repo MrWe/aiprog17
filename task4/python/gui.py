@@ -12,7 +12,7 @@ from itertools import groupby
 from operator import itemgetter
 import random
 
-random.seed(123)
+
 
 class App(tk.Frame):
   def __init__( self, parent):
@@ -44,14 +44,13 @@ class App(tk.Frame):
 
   def start_mnist(self):
 
-    random.seed(123)
+
     print("Started mnist")
-    self.num_neurons = 120
-    self.num_weights = 784
+
     self.lr = 0.5
     #ascii_neurons = main(self.num_neurons, self.num_weights)
 
-    neurons = generate_neurons(self.num_neurons, self.num_weights)
+
     features = []
     labels = []
     for label, feature in read():
@@ -59,14 +58,19 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
-      dist_threshold = 199920;
+    self.num_neurons = 100
+    self.num_weights = len(features[0])
 
-    for i in range(1000):
+    neurons = generate_neurons(self.num_neurons, self.num_weights)
+
+    dist_threshold = 199920;
+
+    for i in range(3000):
       root.update()
       neurons = run(neurons, features, self.lr, 0.7, dist_threshold, steps=1)
-      dist_threshold = dist_threshold * dist_threshold**(-i/60000)
-      self.lr = self.lr * self.lr**(-i/60000)
-      if(i % 1 == 0 and self.checkboxValue.get() == 1):
+      dist_threshold = dist_threshold * dist_threshold**(-i/30000)
+
+      if(i % 100 == 0 and self.checkboxValue.get() == 1):
         neurons = self.sort_neurons(neurons)
 
         ascii_neurons = []
@@ -94,12 +98,12 @@ class App(tk.Frame):
 
     num_correct_classifications = 0
 
-    for j in range(100):
+    for j in range(1000):
       root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
-      if(j % 100 == 0 and self.checkboxValue.get() == 1):
+      if(j % 10 == 0 and self.checkboxValue.get() == 1):
         ascii_neurons = []
         for p in range(len([image])):
           ascii_neuron = []

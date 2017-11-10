@@ -4,10 +4,10 @@ import numpy as np
 #import helpers as hp
 from mnist.helpers import *
 
-random.seed(123)
+
 
 def run(neurons, images, lr, lr_reduction_factor, dist_threshold, steps=1):
-    random.seed(123)
+
     for i in range(steps):
         random_image = random.choice(images)
         closest_neuron = shortest_dist(random_image, neurons)
@@ -15,11 +15,13 @@ def run(neurons, images, lr, lr_reduction_factor, dist_threshold, steps=1):
     return neurons
 
 
-def euclideanDistance(neuron_weights, image_pixels):
-    # total = 0
-    # for i in range(len(neuron_weights)):
-    #     total += pow(neuron_weights[i] - image_pixels[i], 2)
-    # return pow(total,0.5)
+def euclideanDistance(neuron_weights, image_pixels, classification=False):
+    # if(classification):
+    #     total = 0
+    #     for i in range(len(neuron_weights)):
+    #         if(not (neuron_weights[i] == 0) and not (image_pixels[i] == 0)):
+    #             total += pow(neuron_weights[i] - image_pixels[i], 2)
+    #     return pow(total,0.5)
     return np.sqrt(np.sum(np.power(np.subtract(neuron_weights, image_pixels),2)))
 
 
@@ -54,11 +56,11 @@ def update_neighbouring_neurons(image, curr_neuron, neurons, lr, dist_threshold)
             continue
         dist = euclideanDistance(neurons[i], neurons[curr_neuron])
         if(dist <= dist_threshold):
-            update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))*0.05)
+            update_neuron(image, neurons, i, (1-translate(dist, 0, 199920, 0, 1))*0.1)
 
 
 def assign_label(neurons, images, labels):
-    random.seed(123)
+
     assigned_neurons = []
     for i in range(len(neurons)):
         current_best = (float('inf'), 0)
