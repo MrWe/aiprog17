@@ -46,5 +46,22 @@ def get_path_length(neurons):
             length += euclideanDistance(neurons[i], neurons[i+1])
     return length
 
+def calculate_finished_path(neurons, cities):
+    closest_neurons = {}
+    cities_order = []
+    for i in range(len(cities)):
+        shortest = shortest_dist(cities[i], neurons)
+        if(shortest in closest_neurons):
+            closest_neurons[shortest].append(cities[i])
+        else:
+            closest_neurons[shortest] = cities[i]
+    for i in range(len(neurons)):
+        if(i in closest_neurons):
+            cities_order.extend([closest_neurons[i]])
+    return cities_order
+
+
+
+
 
 

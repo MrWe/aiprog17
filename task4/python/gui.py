@@ -30,7 +30,7 @@ class App(tk.Frame):
     self.init_neuron_radius = 50
     self.learning_rate = 1.1
     self.lr_reduction_factor = 0.6
-    self.epochs = 2000
+    self.epochs = 1000
     self.neurons_multiplier = 3
     self.num_neighbours = 50
     self.steps = 20
@@ -189,12 +189,15 @@ class App(tk.Frame):
       self.learning_rate *= 0.999
       if(i%100 == 0):
         self.num_neighbours -= 1
-    self.re_mapped_neurons = []
-    for i in range(len(self.neurons)):
-      x = hp.translate(self.neurons[i][0], 10, self.width-10, self.min_x, self.max_x)
-      y = hp.translate(self.neurons[i][1], 10, self.height-10, self.min_y, self.max_y)
-      self.re_mapped_neurons.append([x,y])
-    print(self.self_org_map.get_path_length(self.re_mapped_neurons))
+    self.ordered_cities = self.self_org_map.calculate_finished_path(self.neurons, self.cities)
+    self.show_board(self.ordered_cities)
+    self.re_mapped_cities = []
+    for i in range(len(self.ordered_cities)):
+      x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
+      y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
+      self.re_mapped_cities.append([x,y])
+    print(self.self_org_map.get_path_length(self.re_mapped_cities))
+
 
 
   def init_neurons(self):
