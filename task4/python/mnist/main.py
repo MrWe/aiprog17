@@ -28,22 +28,7 @@ def main(num_neurons=50, num_weights=784):
         neurons = run(neurons, features, 0.01, 0.9, dist_threshold, steps=1)
         dist_threshold *= 0.7
 
-
-    ascii_neurons = []
-    for p in range(len(neurons)):
-        '''
-        for j in range(len(neurons[0])):
-            if(neurons[p][j] < 0.3):
-                neurons[p][j] = '0'
-            else:
-                neurons[p][j] = '-'
-        '''
-        ascii_neuron = []
-        for k in range(0,784,28):
-            ascii_neuron.append(neurons[p][k:k+28])
-        ascii_neurons.append(ascii_neuron)
-
-    return ascii_neurons
+    return neurons
 
 
 

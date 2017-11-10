@@ -70,16 +70,10 @@ class App(tk.Frame):
       neurons = run(neurons, features, self.lr, 0.7, dist_threshold, steps=1)
       dist_threshold = dist_threshold * dist_threshold**(-i/30000)
 
-      if(i % 100 == 0 and self.checkboxValue.get() == 1):
-        neurons = self.sort_neurons(neurons)
+      if(i % 1 == 0 and self.checkboxValue.get() == 1):
+        #neurons = self.sort_neurons(neurons)
 
-        ascii_neurons = []
-        for p in range(len(neurons)):
-          ascii_neuron = []
-          for k in range(0,784,28):
-              ascii_neuron.append(neurons[p][k:k+28])
-          ascii_neurons.append(ascii_neuron)
-        self.show_mnist(ascii_neurons, self.canvas)
+        self.show_mnist(neurons, self.canvas)
     # for i in range(len(neurons)):
     #   for k in range(len(neurons[i])):
     #     for l in range(len(neurons[i])):
@@ -104,18 +98,18 @@ class App(tk.Frame):
       image = features[random_image_index]
       label = labels[random_image_index]
       if(j % 10 == 0 and self.checkboxValue.get() == 1):
-        ascii_neurons = []
-        for p in range(len([image])):
-          ascii_neuron = []
+
+          #neuron = [[0.4232423, 0.23423423,.....], 6]
+
+
+
+        '''for p in range(len([neurons[classify_image(neurons, labels, assignments, image)[1]]])):
+          neuron = []
           for k in range(0,784,28):
-              ascii_neuron.append([image][p][k:k+28])
-          ascii_neurons.append(ascii_neuron)
-        for p in range(len([neurons[classify_image(neurons, labels, assignments, image)[1]]])):
-          ascii_neuron = []
-          for k in range(0,784,28):
-              ascii_neuron.append([neurons[classify_image(neurons, labels, assignments, image)[1]]][p][k:k+28])
-          ascii_neurons.append(ascii_neuron)
-        self.show_mnist(ascii_neurons, self.canvas2)
+              neuron.append([neurons[classify_image(neurons, labels, assignments, image)[1]]][p][k:k+28])
+          neurons.append(neuron)
+          '''
+        self.show_mnist(neurons, self.canvas2)
       if(labels[assignments[classify_image(neurons, labels, assignments, image)[1]][1]] == label):
         num_correct_classifications += 1
     print("Number of correct:", num_correct_classifications )
@@ -155,28 +149,30 @@ class App(tk.Frame):
 
 
   def show_mnist(self, neurons, canvas, size=2):
+    print("Hello very showy")
     canvas.delete("all")
 
-    size = size
     offset_x = 0
     offset_y = 0
 
-    for k in range(len(neurons)):
+    for k in range(len(neurons)): #[[[0.12314, 0,1234...],[0.1552, 0.901823],[...],...]] k er hver rad
       x = 0
       y = 0
-      for i in range(len(neurons[k])):
+      for l in range(len(neurons[k])): #[[0.123125, 0.59238, ...],[0.123129, 0.948594, ...], ...] l er hvert nevron
         x = 0
-        for j in range(len(neurons[k][i])):
+        for j in range(len(neurons[k][l])): #[0.1239123, 0.2348934, ...] j er hver vekt
           coords = (x+offset_x,y + offset_y,offset_x+x+size,offset_y+y+size)
           x += size
-          curr_fill = (int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255), int(neurons[k][i][j] * 255))
+
+          curr_fill = (int(neurons[k][l][j] * 255), int(neurons[k][l][j] * 255), int(neurons[k][l][j] * 255))
           fill = '#%02x%02x%02x' % curr_fill
+
           canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
-        y += size
-      offset_x += size * 28
-      if(offset_x + size * 28 >= self.width+10):
-        offset_y += size * 28
-        offset_x = 0
+      y += size
+    offset_x += size * 28
+    if(offset_x + size * 28 >= self.width+10):
+      offset_y += size * 28
+      offset_x = 0
 
 
   #NOTE: gui is locked until this is finished

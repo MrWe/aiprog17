@@ -1,13 +1,18 @@
 import numpy as np
 import random
 def generate_neurons(num_neurons, num_weights):
-    
+
     neurons = []
+    len_row = np.floor(np.sqrt(num_neurons))
+    neurons_row = []
     for i in range(num_neurons):
         curr_weights = []
         for j in range(num_weights):
             curr_weights.append(np.random.uniform(0,1))
-        neurons.append(curr_weights)
+        neurons_row.append(curr_weights)
+        if len(neurons_row) == len_row:
+            neurons.append(neurons_row)
+            neurons_row = []
     return neurons
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
