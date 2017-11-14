@@ -45,15 +45,16 @@ def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, di
 
     for neuron in get_neighbouring_neurons(image, index_x, index_y, neurons, 1, dist_threshold):
 
-        update_neuron(image, neurons, neuron[0], neuron[1], math.exp(- (neuron[2] * neuron[2]) / (neighbour_value * neighbour_value)))
+        update_neuron(image, neurons, neuron[0], neuron[1], lr * math.exp(- (neuron[2] * neuron[2]) / (neighbour_value * neighbour_value)))
 
 
 
 def update_neuron(image, neurons, index_x, index_y, lr):
     # neurons[index] = np.subtract(neurons[index],np.subtract(neurons[index], np.multiply(image, lr)))
     # neurons[index] = neurons[index].tolist()
-    for i in range(len(neurons[index_x][index_y])):
-        neurons[index_x][index_y][i] -= (lr * (neurons[index_x][index_y][i] - image[i]))
+    neurons[index_x][index_y] = np.subtract(neurons[index_x][index_y], np.multiply(np.subtract(neurons[index_x][index_y], image), lr))
+    # for i in range(len(neurons[index_x][index_y])):
+    #     neurons[index_x][index_y][i] -= (lr * (neurons[index_x][index_y][i] - image[i]))
 
 
 '''
@@ -91,7 +92,7 @@ def manhattan_distance(start, end):
 
 
 def assign_label(neurons, images, labels):
-    assigned_neurons = []
+    assigned_neurons = {}
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):
             current_best = (float('inf'), 0)
@@ -100,11 +101,33 @@ def assign_label(neurons, images, labels):
                 image = images[random_image_index]
                 label = labels[random_image_index]
                 curr_dist = euclideanDistance(neurons[x][y], image)
+
                 if(curr_dist < current_best[0]):
                     current_best = (curr_dist, random_image_index)
-            assigned_neurons.append(current_best)
-
+            if(x in assigned_neurons):
+                assigned_neurons[x][y] = labels[current_best[1]]
+            else:
+                assigned_neurons[x] = {}
+                assigned_neurons[x][y] = labels[current_best[1]]
     return assigned_neurons
+
+
+
+    # assigned_neurons = []
+    # for x in range(len(neurons)):
+    #     for y in range(len(neurons[x])):
+    #         current_best = (float('inf'), 0)
+    #         for j in range(1000):
+    #             random_image_index = random.randint(0, len(images)-1)
+    #             image = images[random_image_index]
+    #             label = labels[random_image_index]
+    #             curr_dist = euclideanDistance(neurons[x][y], image)
+    #
+    #             if(curr_dist < current_best[0]):
+    #                 current_best = (curr_dist, random_image_index)
+    #         assigned_neurons.append(current_best[1])
+    #
+    # return assigned_neurons
 
 
 def classify_image(neurons, labels, assignments, image):
