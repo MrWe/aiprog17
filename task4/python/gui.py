@@ -11,6 +11,7 @@ import helper as hp
 from itertools import groupby
 from operator import itemgetter
 import random
+import time
 
 
 
@@ -49,10 +50,15 @@ class App(tk.Frame):
 
     print("Started mnist")
 
+<<<<<<< HEAD
     #self.lr = 0.2
     self.epocs = 60
     self.neighbour_value = 10
     self.num_neurons = 300
+=======
+    self.lr = 0.05
+    self.neighbour_value = 1.5
+>>>>>>> 4783f8394066aacdfcb8d81de18f13784b4f7434
     #ascii_neurons = main(self.num_neurons, self.num_weights)
 
     features = []
@@ -63,8 +69,13 @@ class App(tk.Frame):
       features.append(f.flatten().tolist())
 
 
+<<<<<<< HEAD
 
+=======
+    self.num_neurons = 200
+>>>>>>> 4783f8394066aacdfcb8d81de18f13784b4f7434
     self.num_weights = len(features[0])
+    self.row_length = len(f[0])
 
     neurons = generate_neurons(self.num_neurons, self.num_weights)
 
@@ -73,12 +84,21 @@ class App(tk.Frame):
 
     dist_threshold = 10;
 
+<<<<<<< HEAD
     for i in range(1,self.epocs):
       self.lr = np.exp(-i/16)
       root.update()
       neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
       dist_threshold = dist_threshold * dist_threshold**(-i/100)
       self.neighbour_value = self.neighbour_value * (1 - 0.001 * i)
+=======
+    for i in range(20):
+      root.update()
+      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
+      dist_threshold = dist_threshold * dist_threshold**(-i/10000)
+      if(self.neighbour_value > 0.1):
+          self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
+>>>>>>> 4783f8394066aacdfcb8d81de18f13784b4f7434
 
       if(i % 5 == 0 and self.checkboxValue.get() == 1):
         print("Neighbour value:",self.neighbour_value)
@@ -87,8 +107,8 @@ class App(tk.Frame):
         lined_neurons = []
         for p in range(len(flat_neurons)):
           lines = []
-          for k in range(0,784,28):
-              lines.append(flat_neurons[p][k:k+28])
+          for k in range(0,self.num_weights,self.row_length):
+              lines.append(flat_neurons[p][k:k+self.row_length])
           lined_neurons.append(lines)
         self.show_mnist(lined_neurons, self.canvas)
 
@@ -99,10 +119,12 @@ class App(tk.Frame):
     num_correct_classifications = 0
 
     for j in range(1000):
+      time.sleep(3)
       root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
       label = labels[random_image_index]
+<<<<<<< HEAD
       classification = classify_image(neurons, labels, assignments, image)
       classified_neuron = neurons[classification[1]][classification[2]]
       classification_value = assignments[classification[1]][classification[2]]
@@ -110,21 +132,24 @@ class App(tk.Frame):
       if(classification_value == label):
         num_correct_classifications += 1
       if(j % 100 == 0 and self.checkboxValue.get() == 1):
+=======
+      if(j % 1 == 0 and self.checkboxValue.get() == 1):
+>>>>>>> 4783f8394066aacdfcb8d81de18f13784b4f7434
 
 
         classifications = []
 
         lined_neuron = []
-        for k in range(0,784,28):
-            lined_neuron.append(classified_neuron[k:k+28])
+        for k in range(0,self.num_weights,self.row_length):
+            lined_neuron.append(classified_neuron[k:k+self.row_length])
         classifications.append(lined_neuron)
 
         lined_image = []
-        for k in range(0,784,28):
-            lined_image.append(image[k:k+28])
+        for k in range(0,self.num_weights,self.row_length):
+            lined_image.append(image[k:k+self.row_length])
         classifications.append(lined_image)
 
-        self.show_mnist(classifications, self.canvas2)
+        self.show_mnist(classifications, self.canvas2, label1=label, label2=labels[assignments[classify_image(neurons, labels, assignments, image)[1]][1]])
 
 
     print("Number of correct:", num_correct_classifications )
@@ -163,7 +188,7 @@ class App(tk.Frame):
     return neurons
 
 
-  def show_mnist(self, neurons, canvas, size=2):
+  def show_mnist(self, neurons, canvas, size=2, label1=None, label2=None):
     canvas.delete("all")
 
     offset_x = 0
@@ -183,10 +208,17 @@ class App(tk.Frame):
           fill = '#%02x%02x%02x' % curr_fill
 
           canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
+          canvas.create_text(x+offset_x, y + offset_y+50, text=(label1, label2))
         y += size
+<<<<<<< HEAD
       offset_x += size * 28
       if(offset_x + size * 28 >= self.width + 30):
         offset_y += size * 28
+=======
+      offset_x += size * self.row_length
+      if(offset_x + size * self.row_length >= self.width+28):
+        offset_y += size * self.row_length
+>>>>>>> 4783f8394066aacdfcb8d81de18f13784b4f7434
         offset_x = 0
 
 
