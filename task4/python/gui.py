@@ -78,10 +78,12 @@ class App(tk.Frame):
 
     dist_threshold = 10;
 
+    s1 = time.time()
+
     for i in range(1,self.epocs):
       self.lr = np.exp(-i/16)
       root.update()
-      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=1000)
+      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
       dist_threshold = dist_threshold * dist_threshold**(-i/100)
       self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
 
@@ -96,30 +98,46 @@ class App(tk.Frame):
               lines.append(flat_neurons[p][k:k+self.row_length])
           lined_neurons.append(lines)
         self.show_mnist(lined_neurons, self.canvas)
+    s2 = time.time()
+
+    print("TIME: ", s2-s1)
+
+    traning_rate, testing_rate = self.run_classification(None, neurons)
+    self.fname = self.construct_filename([traning_rate, testing_rate])
+    self.save_neurons_to_file(neurons, self.fname)
 
 
-    self.fname = self.save_neurons_to_file(neurons)
-
-    self.run_classification(self.fname)
     print("FERDIG!")
 
-  def save_neurons_to_file(self, neurons):
-    fname = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-    output = open(str(fname), 'wb')
+  def construct_filename(self, args):
+    fname = ""
+    for i in range(len(args)):
+      fname += str(args[i])
+      if(i < len(args)-1):
+        fname += "-"
+    return fname
+
+  def save_neurons_to_file(self, neurons, fname):
+    path = "neurons/"
+    output = open(path + str(fname), 'wb')
     pickle.dump(neurons, output)
     output.close()
     return fname
 
   def load_neurons_from_file(self, fname):
-    pkl_file = open(fname, 'rb')
+    path = "neurons/"
+    pkl_file = open(path + fname, 'rb')
     data = pickle.load(pkl_file)
     pkl_file.close()
     return np.array(data)
 
-  def run_classification(self, fname):
+  def run_classification(self, fname, n=None):
     #--------CLASSIFICATION-----------
     print("CLASSIFYING TRAINING SET")
-    neurons = self.load_neurons_from_file(fname)
+    if(fname == None):
+      neurons = n
+    else:
+      neurons = self.load_neurons_from_file(fname)
 
     features = []
     labels = []
@@ -128,7 +146,7 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
-    self.classify(neurons, features, labels)
+    training_rate = self.classify(neurons, features, labels)
     print("CLASSIFYING TESTING SET")
 
     features = []
@@ -138,7 +156,9 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
-    self.classify(neurons, features, labels)
+    testing_rate = self.classify(neurons, features, labels)
+
+    return training_rate, testing_rate
 
   def classify(self, neurons, features, labels):
     print("Starting classifications")
@@ -174,6 +194,7 @@ class App(tk.Frame):
     print("Total number of classifications:", j)
     if(j > 0):
       print("Success rate:", num_correct_classifications / j)
+    return round(num_correct_classifications / j, 2)
 
 
   def sort_neurons(self, neurons):
@@ -271,7 +292,7 @@ class App(tk.Frame):
     self.entryClas.grid(row=1, column=1)
 
     self.classificationButton = tk.Button(text="Run only classification", command=lambda : self.run_classification(self.entryClas.get()))
-    self.classificationButton.grid()
+    self.classificationButton.grid(row=2, column=1)
 
 
     self.entry = tk.Entry()
