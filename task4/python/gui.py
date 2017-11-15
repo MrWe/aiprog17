@@ -12,6 +12,9 @@ from itertools import groupby
 from operator import itemgetter
 import random
 import time
+import numpy as np
+from time import gmtime, strftime
+import pickle
 
 
 
@@ -51,7 +54,7 @@ class App(tk.Frame):
     print("Started mnist")
 
     #self.lr = 0.2
-    self.epocs = 60
+    self.epocs = 50
     self.neighbour_value = 10
     self.num_neurons = 300
     #ascii_neurons = main(self.num_neurons, self.num_weights)
@@ -78,9 +81,9 @@ class App(tk.Frame):
     for i in range(1,self.epocs):
       self.lr = np.exp(-i/16)
       root.update()
-      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
+      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=1000)
       dist_threshold = dist_threshold * dist_threshold**(-i/100)
-      self.neighbour_value = self.neighbour_value * (1 - 0.001 * i)
+      self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
 
       if(i % 5 == 0 and self.checkboxValue.get() == 1):
         print("Neighbour value:",self.neighbour_value)
@@ -95,12 +98,55 @@ class App(tk.Frame):
         self.show_mnist(lined_neurons, self.canvas)
 
 
+    self.fname = self.save_neurons_to_file(neurons)
 
+    self.run_classification(self.fname)
+    print("FERDIG!")
+
+  def save_neurons_to_file(self, neurons):
+    fname = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+    output = open(str(fname), 'wb')
+    pickle.dump(neurons, output)
+    output.close()
+    return fname
+
+  def load_neurons_from_file(self, fname):
+    pkl_file = open(fname, 'rb')
+    data = pickle.load(pkl_file)
+    pkl_file.close()
+    return np.array(data)
+
+  def run_classification(self, fname):
+    #--------CLASSIFICATION-----------
+    print("CLASSIFYING TRAINING SET")
+    neurons = self.load_neurons_from_file(fname)
+
+    features = []
+    labels = []
+    for label, feature in read("training"):
+      labels.append(label)
+      f = np.array(feature) / 255
+      features.append(f.flatten().tolist())
+
+    self.classify(neurons, features, labels)
+    print("CLASSIFYING TESTING SET")
+
+    features = []
+    labels = []
+    for label, feature in read("testing"):
+      labels.append(label)
+      f = np.array(feature) / 255
+      features.append(f.flatten().tolist())
+
+    self.classify(neurons, features, labels)
+
+  def classify(self, neurons, features, labels):
     print("Starting classifications")
+
     assignments = assign_label(neurons, features, labels)
     num_correct_classifications = 0
 
-    for j in range(1000):
+    for j in range(100):
       root.update()
       random_image_index = random.randint(0, len(features)-1)
       image = features[random_image_index]
@@ -112,8 +158,6 @@ class App(tk.Frame):
       if(classification_value == label):
         num_correct_classifications += 1
       if(j % 100 == 0 and self.checkboxValue.get() == 1):
-
-
         classifications = []
 
         lined_neuron = []
@@ -125,22 +169,11 @@ class App(tk.Frame):
         for k in range(0,self.num_weights,self.row_length):
             lined_image.append(image[k:k+self.row_length])
         classifications.append(lined_image)
-
-        self.show_mnist(classifications, self.canvas2, label1=label, label2=labels[assignments[classify_image(neurons, labels, assignments, image)[1]][1]])
-
-
+        self.show_mnist(classifications, self.canvas2, label1=label, label2=classification_value)
     print("Number of correct:", num_correct_classifications )
     print("Total number of classifications:", j)
     if(j > 0):
       print("Success rate:", num_correct_classifications / j)
-      # print("Label: ", label)
-      # print("Guess: ", labels[assignments[classify_image(neurons, image)[1]][1]])
-      #print((label,assignments[classify_image(neurons, image)[1]][1]))
-
-
-    # for l in range(10):
-    #   print(labels[assignments[l][1]])
-    print("FERDIG!")
 
 
   def sort_neurons(self, neurons):
@@ -185,7 +218,7 @@ class App(tk.Frame):
           fill = '#%02x%02x%02x' % curr_fill
 
           canvas.create_rectangle(coords, outline="", fill=fill, width=1, state='disabled')
-          canvas.create_text(x+offset_x, y + offset_y+50, text=(label1, label2))
+          # canvas.create_text(x+offset_x, y + offset_y+50, text=(label1, label2))
         y += size
       offset_x += size * 28
       if(offset_x + size * 28 >= self.width + 30):
@@ -232,12 +265,21 @@ class App(tk.Frame):
     self.exitButton = tk.Button(text="Exit", command=lambda : exit())
     self.exitButton.grid()
 
+    self.entryClas = tk.Entry()
+    self.entryClas.pack()
+    self.entryClas.insert(0,'Classification')
+    self.entryClas.grid(row=1, column=1)
+
+    self.classificationButton = tk.Button(text="Run only classification", command=lambda : self.run_classification(self.entryClas.get()))
+    self.classificationButton.grid()
+
+
     self.entry = tk.Entry()
     self.entry.pack()
     self.entry.insert(0,'1')
     self.entry.grid()
 
-    self.visualizeCheckbutton = tk.Checkbutton(text="Enable visualations", variable=self.checkboxValue)
+    self.visualizeCheckbutton = tk.Checkbutton(text="Enable visualization", variable=self.checkboxValue)
     self.visualizeCheckbutton.grid()
 
   def _createCanvas(self):

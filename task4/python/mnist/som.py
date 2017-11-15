@@ -4,6 +4,7 @@ import numpy as np
 #import helpers as hp
 from mnist.helpers import *
 from itertools import product
+import numexpr as ne
 
 
 
@@ -25,6 +26,19 @@ def euclideanDistance(neuron_weights, image_pixels, classification=False):
     #     return pow(total,0.5)
     return np.sqrt(np.sum(np.power(np.subtract(neuron_weights, image_pixels),2)))
 
+def squared_row_norms(X):
+    # From http://stackoverflow.com/q/19094441/166749
+    return np.einsum('ij,ij->i', X, X)
+
+def squared_euclidean_distances(data, vec):
+    data2 = squared_row_norms(data)
+    vec2 = squared_row_norms(vec)
+    d = np.dot(data, vec.T).ravel()
+    d *= -2
+    d += data2
+    d += vec2
+    return d
+
 
 def shortest_dist(image_pixels, neurons):
     sh = float("inf")
@@ -32,7 +46,7 @@ def shortest_dist(image_pixels, neurons):
     index_y = 0
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):
-            d = euclideanDistance(image_pixels, neurons[x][y])
+            d = squared_euclidean_distances(image_pixels, neurons[x][y])
             if d < sh:
                 sh = d
                 index_x = x
@@ -50,11 +64,11 @@ def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, di
 
 
 def update_neuron(image, neurons, index_x, index_y, lr):
-    # neurons[index] = np.subtract(neurons[index],np.subtract(neurons[index], np.multiply(image, lr)))
-    # neurons[index] = neurons[index].tolist()
-    neurons[index_x][index_y] = np.subtract(neurons[index_x][index_y], np.multiply(np.subtract(neurons[index_x][index_y], image), lr))
-    # for i in range(len(neurons[index_x][index_y])):
-    #     neurons[index_x][index_y][i] -= (lr * (neurons[index_x][index_y][i] - image[i]))
+    a = neurons[index_x][index_y]
+    sub = ne.evaluate('a - image')
+    mult = ne.evaluate('sub*lr')
+    neurons[index_x][index_y] = ne.evaluate('a - mult')
+    #neurons[index_x][index_y] = np.subtract(neurons[index_x][index_y], np.multiply(np.subtract(neurons[index_x][index_y], image), lr))
 
 
 '''
