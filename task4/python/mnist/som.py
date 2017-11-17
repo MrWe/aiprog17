@@ -83,11 +83,13 @@ def get_neighbouring_neurons(image, x, y, neurons, lr, dist_threshold):
     neighbours = []
     size = int(dist_threshold)
     cell = (x,y)
-    for x in range(len(neurons)):
-        for y in range(len(neurons[x])):
-            dist = manhattan_distance(cell, (x,y))
+    iterator = np.nditer(neurons, flags=['multi_index'])
+    while not iterator.finished:
+        if(iterator.multi_index[1] < len(neurons[0]) and iterator.multi_index[0] < len(neurons)):
+            dist = manhattan_distance(cell, (iterator.multi_index[0],iterator.multi_index[1]))
             if(dist <= size):
-                neighbours.append((x,y,dist))
+                neighbours.append((iterator.multi_index[0],iterator.multi_index[1],dist))
+        iterator.iternext()
     return neighbours
 
 
@@ -115,7 +117,7 @@ def assign_label(neurons, images, labels):
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):
             current_best = (float('inf'), 0)
-            for j in range(1000):
+            for j in range(100):
                 random_image_index = random.randint(0, len(images)-1)
                 image = images[random_image_index]
                 label = labels[random_image_index]
@@ -170,11 +172,20 @@ def classify_image(neurons, labels, assignments, image):
     # return (vote, highest_voted_label)
 
     current_best = (float('inf'), 0)
-    for x in range(len(neurons)):
-        for y in range(len(neurons[x])):
-            curr_dist = euclideanDistance(neurons[x][y], image)
+    iterator = np.nditer(neurons, flags=['multi_index'])
+    while not iterator.finished:
+        if(iterator.multi_index[1] < len(neurons[0]) and iterator.multi_index[0] < len(neurons)):
+            curr_dist = np.linalg.norm(np.array(image) - np.array(neurons[iterator.multi_index[0]][iterator.multi_index[1]]))
             if(curr_dist < current_best[0]):
-                current_best = (curr_dist, x, y)
+                current_best = (curr_dist, iterator.multi_index[0], iterator.multi_index[1])
+        iterator.iternext()
+
+    # current_best = (float('inf'), 0)
+    # for x in range(len(neurons)):
+    #     for y in range(len(neurons[x])):
+    #         curr_dist = euclideanDistance(neurons[x][y], image)
+    #         if(curr_dist < current_best[0]):
+    #             current_best = (curr_dist, x, y)
 
     return current_best
 

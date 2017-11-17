@@ -16,6 +16,7 @@ import numpy as np
 from time import gmtime, strftime
 import pickle
 
+
 random.seed(123)
 
 class App(tk.Frame):
@@ -25,25 +26,13 @@ class App(tk.Frame):
 
     self.width = 800
     self.height = 800
+    self.optimalTSP = [7542, 6110, 629, 22068, 14379, 108159, 59030, 1211]
     self.grid()
     self.checkboxValue = tk.IntVar()
     self.createWidgets()
     self._createCanvas()
 
-  def start_tsp(self):
-    self.init_neuron_radius = 200
-    self.learning_rate = 1.1
-    self.lr_reduction_factor = 0.6
-    self.epochs = 300
-    self.neurons_multiplier = 3
-    self.num_neighbours = 50
-    self.steps = 20
-    self.self_org_map = tsp_som
-    self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
-    self.neurons = self.init_neurons()
 
-    self.draw_points(self.cities)
-    self.on_start_press()
 
   def start_mnist(self):
 
@@ -66,7 +55,7 @@ class App(tk.Frame):
       features.append(f.flatten().tolist())
 
 
-    self.num_neurons = 200
+    self.num_neurons = 300
     self.num_weights = len(features[0])
     self.row_length = len(f[0])
 
@@ -83,8 +72,8 @@ class App(tk.Frame):
       self.lr = np.exp(-i/16)
       root.update()
       neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
-      dist_threshold = dist_threshold * dist_threshold**(-i/100)
-      self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
+      dist_threshold = dist_threshold * dist_threshold**(-i/16)
+      self.neighbour_value = self.neighbour_value * (1 - 0.005 * i)
 
       if(i % 5 == 0 and self.checkboxValue.get() == 1):
         print("Neighbour value:",self.neighbour_value)
@@ -247,10 +236,26 @@ class App(tk.Frame):
         offset_x = 0
 
 
+  def start_tsp(self):
+    self.init_neuron_radius = 50
+    self.learning_rate = 1.1
+    self.lr_reduction_factor = 0.7
+    self.epochs = 100
+    self.neurons_multiplier = 3
+    self.num_neighbours = 100
+    self.steps = 20
+    self.self_org_map = tsp_som
+    self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
+    self.neurons = self.init_neurons()
+
+    self.draw_points(self.cities)
+    self.on_start_press()
+
+
   #NOTE: gui is locked until this is finished
   def on_start_press(self):
     for i in range(self.epochs):
-      self.neurons = self.self_org_map.run(self.neurons, self.cities, np.exp(-i/16), self.lr_reduction_factor, self.num_neighbours, self.steps)
+      self.neurons = self.self_org_map.run(self.neurons, self.cities, np.exp(-i/20), self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       if(self.checkboxValue.get() == 1):
         self.show_board(self.neurons)
@@ -264,16 +269,24 @@ class App(tk.Frame):
       x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
       y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
       self.re_mapped_cities.append([x,y])
-    print("Path length:", self.self_org_map.get_path_length(self.re_mapped_cities))
+
+    path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
+    optimal_path_length = self.optimalTSP[int(self.entry.get())-1]
+    print("Board: ", self.entry.get())
+    print("Path length:", path_length)
+    print("Optimal length:", optimal_path_length)
+    print("percent above optimal:", ((path_length / optimal_path_length)*100)-100)
+    print("\n")
 
 
 
   def init_neurons(self):
     num_neurons = len(self.cities) * self.neurons_multiplier
+    centerx,centery = self.self_org_map.centeroidnp(np.array(self.cities))
     neurons = []
     for i in range(num_neurons):
-      circ_x = self.width/2 + self.init_neuron_radius * math.cos(hp.translate(i, 0, num_neurons, 0, math.pi*2))
-      circ_y = self.height/2 + self.init_neuron_radius * math.sin(hp.translate(i, 0, num_neurons, 0, math.pi*2))
+      circ_x = centerx + self.init_neuron_radius * math.cos(hp.translate(i, 0, num_neurons, 0, math.pi*2))
+      circ_y = centery + self.init_neuron_radius * math.sin(hp.translate(i, 0, num_neurons, 0, math.pi*2))
       neurons.append([circ_x, circ_y])
     return neurons
 

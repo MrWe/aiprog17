@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 random.seed(123)
 
 def run(neurons, cities, lr, lr_reduction_factor, num_neighbours, steps=10):
@@ -68,7 +68,11 @@ def calculate_finished_path(neurons, cities):
     return cities_order
 
 
-
+def centeroidnp(arr):
+    length = arr.shape[0]
+    sum_x = np.sum(arr[:, 0])
+    sum_y = np.sum(arr[:, 1])
+    return sum_x/length, sum_y/length
 
 
 
