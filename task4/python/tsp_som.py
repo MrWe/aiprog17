@@ -61,10 +61,12 @@ def calculate_finished_path(neurons, cities):
         if(shortest in closest_neurons):
             closest_neurons[shortest].append(cities[i])
         else:
-            closest_neurons[shortest] = cities[i]
+            closest_neurons[shortest] = [cities[i]]
+
     for i in range(len(neurons)):
         if(i in closest_neurons):
-            cities_order.extend([closest_neurons[i]])
+            for j in range(len(closest_neurons[i])):
+                cities_order.append(closest_neurons[i][j])
     return cities_order
 
 
