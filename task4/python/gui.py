@@ -15,7 +15,7 @@ import time
 import numpy as np
 from time import gmtime, strftime
 import pickle
-
+import json
 
 random.seed(123)
 
@@ -31,8 +31,6 @@ class App(tk.Frame):
     self.checkboxValue = tk.IntVar()
     self.createWidgets()
     self._createCanvas()
-
-
 
   def start_mnist(self):
 
@@ -237,13 +235,7 @@ class App(tk.Frame):
 
 
   def start_tsp(self):
-    self.init_neuron_radius = 50
-    self.learning_rate = 1.1
-    self.lr_reduction_factor = 0.7
-    self.epochs = 100
-    self.neurons_multiplier = 3
-    self.num_neighbours = 100
-    self.steps = 20
+    self.init_neuron_radius, self.learning_rate, self.lr_reduction_factor, self.epochs, self.neurons_multiplier, self.num_neighbours, self.steps = self.read_config()
     self.self_org_map = tsp_som
     self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
@@ -251,6 +243,24 @@ class App(tk.Frame):
     self.draw_points(self.cities)
     self.on_start_press()
 
+  def read_config(self):
+      board = self.entry.get()
+      try:
+        with open('config.json') as f:
+            d = json.load(f)
+        config = d[board]
+      except:
+        config = {
+        "learning_rate": 0.5,
+        "init_neuron_radius": 50,
+        "learning_rate": 1.1,
+        "lr_reduction_factor": 0.7,
+        "epochs": 100,
+        "neurons_multiplier": 3,
+        "num_neighbours": 100,
+        "steps": 20
+        }
+      return config['init_neuron_radius'], config['learning_rate'], config['lr_reduction_factor'], config['epochs'], config['neurons_multiplier'], config['num_neighbours'], config['steps']
 
   #NOTE: gui is locked until this is finished
   def on_start_press(self):
