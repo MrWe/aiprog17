@@ -31,10 +31,10 @@ class App(tk.Frame):
     self._createCanvas()
 
   def start_tsp(self):
-    self.init_neuron_radius = 50
+    self.init_neuron_radius = 200
     self.learning_rate = 1.1
     self.lr_reduction_factor = 0.6
-    self.epochs = 500
+    self.epochs = 300
     self.neurons_multiplier = 3
     self.num_neighbours = 50
     self.steps = 20
@@ -250,7 +250,7 @@ class App(tk.Frame):
   #NOTE: gui is locked until this is finished
   def on_start_press(self):
     for i in range(self.epochs):
-      self.neurons = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
+      self.neurons = self.self_org_map.run(self.neurons, self.cities, np.exp(-i/16), self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       if(self.checkboxValue.get() == 1):
         self.show_board(self.neurons)
