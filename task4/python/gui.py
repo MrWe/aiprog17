@@ -235,7 +235,7 @@ class App(tk.Frame):
 
 
   def start_tsp(self):
-    self.init_neuron_radius, self.learning_rate, self.lr_reduction_factor, self.epochs, self.neurons_multiplier, self.num_neighbours, self.steps = self.read_config()
+    self.init_neuron_radius, self.learning_rate, self.learning_rate_decay, self.lr_reduction_factor, self.epochs, self.neurons_multiplier, self.num_neighbours, self.steps = self.read_config()
     self.self_org_map = tsp_som
     self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
@@ -251,7 +251,8 @@ class App(tk.Frame):
         config = d[board]
       except:
         config = {
-        "learning_rate": 0.5,
+        "learning_rate": 0.1,
+        "learning_rate_decay": 20,
         "init_neuron_radius": 50,
         "learning_rate": 1.1,
         "lr_reduction_factor": 0.7,
@@ -260,12 +261,12 @@ class App(tk.Frame):
         "num_neighbours": 100,
         "steps": 20
         }
-      return config['init_neuron_radius'], config['learning_rate'], config['lr_reduction_factor'], config['epochs'], config['neurons_multiplier'], config['num_neighbours'], config['steps']
+      return config['init_neuron_radius'], config['learning_rate'], config['learning_rate_decay'], config['lr_reduction_factor'], config['epochs'], config['neurons_multiplier'], config['num_neighbours'], config['steps']
 
   #NOTE: gui is locked until this is finished
   def on_start_press(self):
     for i in range(self.epochs):
-      self.neurons = self.self_org_map.run(self.neurons, self.cities, np.exp(-i/20), self.lr_reduction_factor, self.num_neighbours, self.steps)
+      self.neurons = self.self_org_map.run(self.neurons, self.cities, np.exp(-i/self.learning_rate_decay), self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       if(self.checkboxValue.get() == 1):
         self.show_board(self.neurons)
