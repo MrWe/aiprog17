@@ -250,6 +250,7 @@ class App(tk.Frame):
             d = json.load(f)
         config = d[board]
       except:
+        print("Using fallback parameters")
         config = {
         "learning_rate": 0.1,
         "learning_rate_decay": 20,
