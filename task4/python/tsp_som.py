@@ -1,11 +1,16 @@
 import random
 
+random.seed(123)
+
 def run(neurons, cities, lr, lr_reduction_factor, num_neighbours, steps=10):
-    for i in range(steps):
-        random_city = random.choice(cities)
-        closest_neuron = shortest_dist(random_city, neurons)
-        update_neurons(random_city, neurons, closest_neuron, lr, lr_reduction_factor, num_neighbours)
-    return neurons, get_path_length(neurons)
+    random.seed(123)
+    random.shuffle(cities)
+    for i in range(len(cities)):
+
+        #random_city = random.choice(cities)
+        closest_neuron = shortest_dist(cities[i], neurons)
+        update_neurons(cities[i], neurons, closest_neuron, lr, lr_reduction_factor, num_neighbours)
+    return neurons
 
 
 def euclideanDistance(coordinate1, coordinate2):
@@ -45,6 +50,8 @@ def get_path_length(neurons):
         else:
             length += euclideanDistance(neurons[i], neurons[i+1])
     return length
+
+#hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
 
 def calculate_finished_path(neurons, cities):
     closest_neurons = {}

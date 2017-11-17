@@ -13,7 +13,7 @@ from operator import itemgetter
 import random
 import time
 
-
+random.seed(123)
 
 class App(tk.Frame):
   def __init__( self, parent):
@@ -31,11 +31,10 @@ class App(tk.Frame):
     self.init_neuron_radius = 50
     self.learning_rate = 1.1
     self.lr_reduction_factor = 0.6
-    self.epochs = 1000
+    self.epochs = 500
     self.neurons_multiplier = 3
     self.num_neighbours = 50
     self.steps = 20
-    self.path_length = 0
     self.self_org_map = tsp_som
     self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
     self.neurons = self.init_neurons()
@@ -100,6 +99,7 @@ class App(tk.Frame):
     assignments = assign_label(neurons, features, labels)
     num_correct_classifications = 0
 
+    random.seed(123)
     for j in range(1000):
       root.update()
       random_image_index = random.randint(0, len(features)-1)
@@ -196,7 +196,7 @@ class App(tk.Frame):
   #NOTE: gui is locked until this is finished
   def on_start_press(self):
     for i in range(self.epochs):
-      self.neurons, self.path_length = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
+      self.neurons = self.self_org_map.run(self.neurons, self.cities, self.learning_rate, self.lr_reduction_factor, self.num_neighbours, self.steps)
       root.update()
       if(self.checkboxValue.get() == 1):
         self.show_board(self.neurons)
@@ -210,6 +210,7 @@ class App(tk.Frame):
       x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
       y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
       self.re_mapped_cities.append([x,y])
+    print("Path length:", self.self_org_map.get_path_length(self.re_mapped_cities))
 
 
 
