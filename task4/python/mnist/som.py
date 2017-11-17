@@ -4,6 +4,7 @@ import numpy as np
 #import helpers as hp
 from mnist.helpers import *
 from itertools import product
+import numexpr as ne
 
 
 
@@ -23,20 +24,38 @@ def euclideanDistance(neuron_weights, image_pixels, classification=False):
     #         if(not (neuron_weights[i] == 0) and not (image_pixels[i] == 0)):
     #             total += pow(neuron_weights[i] - image_pixels[i], 2)
     #     return pow(total,0.5)
-    return np.sqrt(np.sum(np.power(np.subtract(neuron_weights, image_pixels),2)))
+    a = neuron_weights
+    b = image_pixels
 
+    sub = ne.evaluate('a-b')
+    power = ne.evaluate('sub**2')
+    neSum = ne.evaluate('sum(power)')
+    return ne.evaluate('neSum**0.5')
+
+
+    #return np.sqrt(np.sum(np.power(np.subtract(neuron_weights, image_pixels),2)))
 
 def shortest_dist(image_pixels, neurons):
     sh = float("inf")
     index_x = 0
     index_y = 0
-    for x in range(len(neurons)):
-        for y in range(len(neurons[x])):
-            d = euclideanDistance(image_pixels, neurons[x][y])
+    iterator = np.nditer(neurons, flags=['multi_index'])
+    while not iterator.finished:
+        if(iterator.multi_index[1] < len(neurons[0]) and iterator.multi_index[0] < len(neurons)):
+            d = np.linalg.norm(np.array(image_pixels) - np.array(neurons[iterator.multi_index[0]][iterator.multi_index[1]]))
             if d < sh:
                 sh = d
-                index_x = x
-                index_y = y
+                index_x = iterator.multi_index[0]
+                index_y = iterator.multi_index[1]
+        iterator.iternext()
+    # for x in np.nditer(a, flags=['multi_index'])
+    #     for y in range(len(neurons[x])):
+    #         #d = euclideanDistance(image_pixels, neurons[x][y])
+    #         np.linalg.norm(image_pixels - neurons[x][y])
+    #         if d < sh:
+    #             sh = d
+    #             index_x = x
+    #             index_y = y
     return index_x, index_y
 
 def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, dist_threshold, neighbour_value):
@@ -50,11 +69,11 @@ def update_neurons(image, neurons, index_x, index_y, lr, lr_reduction_factor, di
 
 
 def update_neuron(image, neurons, index_x, index_y, lr):
-    # neurons[index] = np.subtract(neurons[index],np.subtract(neurons[index], np.multiply(image, lr)))
-    # neurons[index] = neurons[index].tolist()
-    neurons[index_x][index_y] = np.subtract(neurons[index_x][index_y], np.multiply(np.subtract(neurons[index_x][index_y], image), lr))
-    # for i in range(len(neurons[index_x][index_y])):
-    #     neurons[index_x][index_y][i] -= (lr * (neurons[index_x][index_y][i] - image[i]))
+    a = neurons[index_x][index_y]
+    sub = ne.evaluate('a - image')
+    mult = ne.evaluate('sub*lr')
+    neurons[index_x][index_y] = ne.evaluate('a - mult')
+    #neurons[index_x][index_y] = np.subtract(neurons[index_x][index_y], np.multiply(np.subtract(neurons[index_x][index_y], image), lr))
 
 
 '''
