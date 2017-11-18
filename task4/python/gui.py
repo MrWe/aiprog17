@@ -17,6 +17,8 @@ from time import gmtime, strftime
 import pickle
 import json
 
+
+
 random.seed(123)
 
 class App(tk.Frame):
@@ -53,7 +55,7 @@ class App(tk.Frame):
       features.append(f.flatten().tolist())
 
 
-    self.num_neurons = 300
+    self.num_neurons = 190
     self.num_weights = len(features[0])
     self.row_length = len(f[0])
 
@@ -64,16 +66,25 @@ class App(tk.Frame):
 
     dist_threshold = 10;
 
+    training_images = []
+
     s1 = time.time()
+
+
 
     for i in range(1,self.epocs):
       self.lr = np.exp(-i/16)
       root.update()
-      neurons = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, steps=100)
-      dist_threshold = dist_threshold * dist_threshold**(-i/16)
-      self.neighbour_value = self.neighbour_value * (1 - 0.005 * i)
+      neurons, images_this_turn = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, i, steps=50)
+      dist_threshold = dist_threshold * dist_threshold**(-i/100)
+      self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
+      print("Epoch:", i)
 
-      if(i % 5 == 0 and self.checkboxValue.get() == 1):
+      for j in range(len(images_this_turn)):
+        training_images.append(images_this_turn[j])
+
+      if(i % 10 == 0 and self.checkboxValue.get() == 1):
+
         print("Neighbour value:",self.neighbour_value)
         print("Learning rate:",self.lr)
         flat_neurons = [y for x in neurons for y in x]
@@ -88,7 +99,7 @@ class App(tk.Frame):
 
     print("TIME: ", s2-s1)
 
-    traning_rate, testing_rate = self.run_classification(None, neurons)
+    traning_rate, testing_rate = self.run_classification(None, training_images, neurons)
     self.fname = self.construct_filename([traning_rate, testing_rate])
     self.save_neurons_to_file(neurons, self.fname)
 
@@ -117,7 +128,7 @@ class App(tk.Frame):
     pkl_file.close()
     return np.array(data)
 
-  def run_classification(self, fname, n=None):
+  def run_classification(self, fname, training_images=None, n=None):
     #--------CLASSIFICATION-----------
     print("CLASSIFYING TRAINING SET")
     if(fname == None):
@@ -132,7 +143,11 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
-    training_rate = self.classify(neurons, features, labels)
+
+    if(training_images == None):
+      training_rate = self.classify(neurons, features, labels)
+    else:
+      training_rate = self.classify(neurons, features, labels, training_images)
     print("CLASSIFYING TESTING SET")
 
     features = []
@@ -146,42 +161,78 @@ class App(tk.Frame):
 
     return training_rate, testing_rate
 
-  def classify(self, neurons, features, labels):
+  def classify(self, neurons, features, labels, indices=None):
     print("Starting classifications")
 
     assignments = assign_label(neurons, features, labels)
     num_correct_classifications = 0
+    num_classifications = 0
 
-    random.seed(123)
-    for j in range(1000):
-      root.update()
-      random_image_index = random.randint(0, len(features)-1)
-      image = features[random_image_index]
-      label = labels[random_image_index]
-      classification = classify_image(neurons, labels, assignments, image)
-      classified_neuron = neurons[classification[1]][classification[2]]
-      classification_value = assignments[classification[1]][classification[2]]
+    if(indices == None):
+      random.seed(123)
+      for j in range(100):
+        root.update()
+        random_image_index = random.randint(0, len(features)-1)
+        image = features[random_image_index]
+        label = labels[random_image_index]
+        classification = classify_image(neurons, labels, assignments, image)
+        classified_neuron = neurons[classification[1]][classification[2]]
+        classification_value = assignments[classification[1]][classification[2]]
 
-      if(classification_value == label):
-        num_correct_classifications += 1
-      if(j % 100 == 0 and self.checkboxValue.get() == 1):
-        classifications = []
+        if(classification_value == label):
+          num_correct_classifications += 1
+        if(j % 100 == 0 and self.checkboxValue.get() == 1):
+          classifications = []
 
-        lined_neuron = []
-        for k in range(0,self.num_weights,self.row_length):
-            lined_neuron.append(classified_neuron[k:k+self.row_length])
-        classifications.append(lined_neuron)
+          lined_neuron = []
+          for k in range(0,self.num_weights,self.row_length):
+              lined_neuron.append(classified_neuron[k:k+self.row_length])
+          classifications.append(lined_neuron)
 
-        lined_image = []
-        for k in range(0,self.num_weights,self.row_length):
-            lined_image.append(image[k:k+self.row_length])
-        classifications.append(lined_image)
-        self.show_mnist(classifications, self.canvas2, label1=label, label2=classification_value)
-    print("Number of correct:", num_correct_classifications )
-    print("Total number of classifications:", j)
-    if(j > 0):
-      print("Success rate:", num_correct_classifications / j)
-    return round(num_correct_classifications / j, 2)
+          lined_image = []
+          for k in range(0,self.num_weights,self.row_length):
+              lined_image.append(image[k:k+self.row_length])
+          classifications.append(lined_image)
+          self.show_mnist(classifications, self.canvas2, label1=label, label2=classification_value)
+      print("Number of correct:", num_correct_classifications )
+      print("Total number of classifications:", j)
+      if(j > 0):
+        print("Success rate:", num_correct_classifications / j)
+      return round(num_correct_classifications / j, 2)
+
+    else:
+      print("Number of classification cases:", len(indices))
+      for j in range(len(indices)):
+        root.update()
+        num_classifications += 1
+        image_index = indices[j]
+        image = features[image_index]
+        label = labels[image_index]
+        classification = classify_image(neurons, labels, assignments, image)
+        classified_neuron = neurons[classification[1]][classification[2]]
+        classification_value = assignments[classification[1]][classification[2]]
+
+        if(classification_value == label):
+          num_correct_classifications += 1
+        if(j % 100 == 0 and self.checkboxValue.get() == 1):
+          classifications = []
+
+          lined_neuron = []
+          for k in range(0,self.num_weights,self.row_length):
+              lined_neuron.append(classified_neuron[k:k+self.row_length])
+          classifications.append(lined_neuron)
+
+          lined_image = []
+          for k in range(0,self.num_weights,self.row_length):
+              lined_image.append(image[k:k+self.row_length])
+          classifications.append(lined_image)
+          self.show_mnist(classifications, self.canvas2, label1=label, label2=classification_value)
+      print("Number of correct:", num_correct_classifications )
+      print("Total number of classifications:", j)
+      if(j > 0):
+        print("Success rate:", num_correct_classifications / num_classifications)
+      return round(num_correct_classifications / num_classifications, 2)
+
 
 
   def sort_neurons(self, neurons):

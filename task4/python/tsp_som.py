@@ -1,12 +1,13 @@
 import random
 import numpy as np
-random.seed(123)
+import numexpr as ne
+#random.seed(123)
 
 def run(neurons, cities, lr, lr_reduction_factor, num_neighbours, steps=10):
-    random.seed(123)
+
+    #random.seed(123)
     random.shuffle(cities)
     for i in range(len(cities)):
-
         #random_city = random.choice(cities)
         closest_neuron = shortest_dist(cities[i], neurons)
         update_neurons(cities[i], neurons, closest_neuron, lr, lr_reduction_factor, num_neighbours)
@@ -25,9 +26,11 @@ def shortest_dist(city, neurons):
         if d < sh:
             sh = d
             index = i
+
     return index
 
 def update_neurons(city, neurons, index, lr, lr_reduction_factor, num_neighbours):
+
     update_neuron(city, neurons, index, lr)
 
     for x in range(num_neighbours):
@@ -37,6 +40,7 @@ def update_neurons(city, neurons, index, lr, lr_reduction_factor, num_neighbours
 
 
 def update_neuron(city, neurons, index, lr):
+
     dir_x = lr * (neurons[index][0] - city[0])
     dir_y = lr * (neurons[index][1] - city[1])
     neurons[index][0] -= dir_x

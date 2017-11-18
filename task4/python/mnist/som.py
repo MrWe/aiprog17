@@ -5,16 +5,20 @@ import numpy as np
 from mnist.helpers import *
 from itertools import product
 import numexpr as ne
+import time
 
 
 
-def run(neurons, images, lr, lr_reduction_factor, dist_threshold, neighbour_value, steps=1):
-
+def run(neurons, images, lr, lr_reduction_factor, dist_threshold, neighbour_value, i, steps=1):
+    random.seed(i)
+    training_images = []
     for i in range(steps):
-        random_image = random.choice(images)
+        rand = random.randint(0, len(images) - 1)
+        training_images.append(rand)
+        random_image = images[rand]
         closest_neuron_x, closest_neuron_y = shortest_dist(random_image, neurons)
         update_neurons(random_image, neurons, closest_neuron_x, closest_neuron_y, lr, lr_reduction_factor, dist_threshold, neighbour_value)
-    return neurons
+    return neurons, training_images
 
 
 def euclideanDistance(neuron_weights, image_pixels, classification=False):
@@ -117,7 +121,7 @@ def assign_label(neurons, images, labels):
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):
             current_best = (float('inf'), 0)
-            for j in range(100):
+            for j in range(2000):
                 random_image_index = random.randint(0, len(images)-1)
                 image = images[random_image_index]
                 label = labels[random_image_index]
