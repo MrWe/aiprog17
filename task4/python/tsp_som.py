@@ -114,6 +114,9 @@ def enhance_finished_path(cities):
                     should_run_again = True
 
 
+    print(len(best_path_cities))
+
+
     return best_path_cities
 
 

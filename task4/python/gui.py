@@ -295,7 +295,9 @@ class App(tk.Frame):
   def start_tsp(self):
     self.init_neuron_radius, self.learning_rate, self.learning_rate_decay, self.lr_reduction_factor, self.epochs, self.neurons_multiplier, self.num_neighbours, self.steps = self.read_config()
     self.self_org_map = tsp_som
-    self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
+    self.cities, self.none_scaled_cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ self.entry.get() + '.txt', self.width, self.height)
+    if(self.entry.get() == "8"):
+      self.cities = self.none_scaled_cities
     self.neurons = self.init_neurons()
 
     self.draw_points(self.cities)
@@ -333,20 +335,21 @@ class App(tk.Frame):
       if(i%100 == 0):
         self.num_neighbours -= 1
     self.ordered_cities = self.self_org_map.calculate_finished_path(self.neurons, self.cities)
-    self.show_board(self.ordered_cities)
-    root.update()
     self.ordered_cities = self.self_org_map.enhance_finished_path(self.ordered_cities)
     self.show_board(self.ordered_cities)
 
-    self.re_mapped_cities = []
-    for i in range(len(self.ordered_cities)):
-      x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
-      y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
-      self.re_mapped_cities.append([x,y])
-    self.re_mapped_cities = self.self_org_map.enhance_finished_path(self.re_mapped_cities)
+    if(self.entry.get() is not "8"):
+      self.re_mapped_cities = []
+      for i in range(len(self.ordered_cities)):
+        x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
+        y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
+        self.re_mapped_cities.append([x,y])
+      self.re_mapped_cities = self.self_org_map.enhance_finished_path(self.re_mapped_cities)
 
-
-    path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
+    if(self.entry.get() == "8"):
+      path_length = self.self_org_map.get_path_length(self.ordered_cities)
+    else:
+      path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
     optimal_path_length = self.optimalTSP[int(self.entry.get())-1]
     print("Board: ", self.entry.get())
     print("Path length:", path_length)
