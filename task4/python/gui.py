@@ -136,12 +136,14 @@ class App(tk.Frame):
     return np.array(data)
 
   def run_classification(self, fname, training_images=None, n=None):
-    #--------CLASSIFICATION-----------
-    print("CLASSIFYING TRAINING SET")
+
+
+
     if(fname == None):
       neurons = n
     else:
       neurons = self.load_neurons_from_file(fname)
+
 
     features = []
     labels = []
@@ -149,12 +151,15 @@ class App(tk.Frame):
       labels.append(label)
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
+    assignments = assign_label(neurons, features, labels)
 
 
+    #--------CLASSIFICATION-----------
+    print("CLASSIFYING TRAINING SET")
     if(training_images == None):
-      training_rate = self.classify(neurons, features, labels)
+      training_rate = self.classify(neurons, features, labels, assignments)
     else:
-      training_rate = self.classify(neurons, features, labels, training_images)
+      training_rate = self.classify(neurons, features, labels, assignments, training_images)
     print("CLASSIFYING TESTING SET")
 
     features = []
@@ -164,14 +169,14 @@ class App(tk.Frame):
       f = np.array(feature) / 255
       features.append(f.flatten().tolist())
 
-    testing_rate = self.classify(neurons, features, labels)
+    testing_rate = self.classify(neurons, features, labels, assignments)
 
     return training_rate, testing_rate
 
-  def classify(self, neurons, features, labels, indices=None):
+  def classify(self, neurons, features, labels, assignments, indices=None):
     print("Starting classifications")
 
-    assignments = assign_label(neurons, features, labels)
+
     num_correct_classifications = 0
     num_classifications = 0
 
