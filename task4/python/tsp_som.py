@@ -91,12 +91,10 @@ def enhance_finished_path(cities):
                 test_path = first + list(all_perms[j]) + last
                 curr_path_length = get_path_length(test_path)
                 if(curr_path_length < best_path_length):
-                    print(curr_path_length, best_path_length)
                     best_path_length = curr_path_length
                     best_path_cities = test_path
                     should_run_again = True
     best_path_cities_copy = best_path_cities[:]
-    print("Her", len(best_path_cities_copy))
     dist_to_shuffle = 2
     should_run_again = True
     while(should_run_again):
@@ -110,12 +108,12 @@ def enhance_finished_path(cities):
                 test_path = first + list(all_perms[j]) + last
                 curr_path_length = get_path_length(test_path)
                 if(curr_path_length < best_path_length):
-                    print(curr_path_length, best_path_length)
+
                     best_path_length = curr_path_length
                     best_path_cities = test_path
                     should_run_again = True
 
-    print(len(best_path_cities))
+
     return best_path_cities
 
 

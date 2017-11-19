@@ -41,7 +41,7 @@ class App():
         self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ str(i) + '.txt', 800, 800)
         self.neurons = self.init_neurons()
         should_break = self.on_start_press()
-        if(self.optimal_count > 0):
+        if(self.optimal_count > 5):
           print("Number of correct: ", self.optimal_count)
           print('''
             "learning_rate":''' +  str(self.learning_rate) + ''',
@@ -78,13 +78,16 @@ class App():
      if(i%100 == 0):
        self.num_neighbours -= 1
 
-    self.ordered_cities = self.self_org_map.calculate_finished_path(self.neurons, self.cities)
+     self.ordered_cities = self.self_org_map.calculate_finished_path(self.neurons, self.cities)
 
-    self.re_mapped_cities = []
-    for i in range(len(self.ordered_cities)):
-     x = hp.translate(self.ordered_cities[i][0], 10, 800-10, self.min_x, self.max_x)
-     y = hp.translate(self.ordered_cities[i][1], 10, 800-10, self.min_y, self.max_y)
-     self.re_mapped_cities.append([x,y])
+     self.ordered_cities = self.self_org_map.enhance_finished_path(self.ordered_cities)
+
+     self.re_mapped_cities = []
+     for i in range(len(self.ordered_cities)):
+      x = hp.translate(self.ordered_cities[i][0], 10, 800-10, self.min_x, self.max_x)
+      y = hp.translate(self.ordered_cities[i][1], 10, 800-10, self.min_y, self.max_y)
+      self.re_mapped_cities.append([x,y])
+     self.re_mapped_cities = self.self_org_map.enhance_finished_path(self.re_mapped_cities)
 
     path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
     optimal_path_length = self.optimalTSP[int(self.board-1)]

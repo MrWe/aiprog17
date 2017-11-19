@@ -75,7 +75,7 @@
     "init_neuron_radius": 500,
     "lr_reduction_factor": 0.75,
     "epochs": 100,
-    "neurons_multiplier": 2,
+    "neurons_multiplier": 5,
     "num_neighbours": 100,
     "steps": 20
   }

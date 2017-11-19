@@ -5,6 +5,7 @@ def read_file(file, screen_width, screen_height):
     x = []
     y = []
     points = []
+    points2 = []
     next(f)
     next(f)
     for line in f.readlines():
@@ -18,6 +19,7 @@ def read_file(file, screen_width, screen_height):
     x_min, x_max = hp.get_min_max(x)
     y_min, y_max = hp.get_min_max(y)
     for i in range(len(x)):
+        points2.append([x[i], y[i]])
         curr_x = hp.translate(x[i], x_min, x_max, 10, screen_width-10)
         curr_y = hp.translate(y[i], y_min, y_max, 10, screen_height-10)
         points.append([curr_x,curr_y])

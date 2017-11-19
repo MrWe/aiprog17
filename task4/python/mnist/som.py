@@ -117,6 +117,7 @@ def manhattan_distance(start, end):
 
 
 def assign_label(neurons, images, labels):
+    random.seed(123)
     assigned_neurons = {}
     for x in range(len(neurons)):
         for y in range(len(neurons[x])):

@@ -44,7 +44,6 @@ class App(tk.Frame):
     #self.lr = 0.2
     self.epocs = 50
     self.neighbour_value = 10
-    self.num_neurons = 300
     #ascii_neurons = main(self.num_neurons, self.num_weights)
 
     features = []
@@ -55,7 +54,7 @@ class App(tk.Frame):
       features.append(f.flatten().tolist())
 
 
-    self.num_neurons = 190
+    self.num_neurons = 450
     self.num_weights = len(features[0])
     self.row_length = len(f[0])
 
@@ -75,8 +74,8 @@ class App(tk.Frame):
     for i in range(1,self.epocs):
       self.lr = np.exp(-i/16)
       root.update()
-      neurons, images_this_turn = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, i, steps=50)
-      dist_threshold = dist_threshold * dist_threshold**(-i/100)
+      neurons, images_this_turn = run(neurons, features, self.lr, 0.7, dist_threshold, self.neighbour_value, i, steps=100)
+      dist_threshold = dist_threshold * dist_threshold**(-i/50)
       self.neighbour_value = self.neighbour_value * (1 - 0.01 * i)
       print("Epoch:", i)
 
@@ -98,6 +97,14 @@ class App(tk.Frame):
     s2 = time.time()
 
     print("TIME: ", s2-s1)
+    flat_neurons = [y for x in neurons for y in x]
+    lined_neurons = []
+    for p in range(len(flat_neurons)):
+      lines = []
+      for k in range(0,self.num_weights,self.row_length):
+          lines.append(flat_neurons[p][k:k+self.row_length])
+      lined_neurons.append(lines)
+    self.show_mnist(lined_neurons, self.canvas)
 
     traning_rate, testing_rate = self.run_classification(None, training_images, neurons)
     self.fname = self.construct_filename([traning_rate, testing_rate])
