@@ -327,11 +327,17 @@ class App(tk.Frame):
         self.num_neighbours -= 1
     self.ordered_cities = self.self_org_map.calculate_finished_path(self.neurons, self.cities)
     self.show_board(self.ordered_cities)
+    root.update()
+    self.ordered_cities = self.self_org_map.enhance_finished_path(self.ordered_cities)
+    self.show_board(self.ordered_cities)
+
     self.re_mapped_cities = []
     for i in range(len(self.ordered_cities)):
       x = hp.translate(self.ordered_cities[i][0], 10, self.width-10, self.min_x, self.max_x)
       y = hp.translate(self.ordered_cities[i][1], 10, self.height-10, self.min_y, self.max_y)
       self.re_mapped_cities.append([x,y])
+    self.re_mapped_cities = self.self_org_map.enhance_finished_path(self.re_mapped_cities)
+
 
     path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
     optimal_path_length = self.optimalTSP[int(self.entry.get())-1]
@@ -344,7 +350,7 @@ class App(tk.Frame):
 
 
   def init_neurons(self):
-    num_neurons = len(self.cities) * self.neurons_multiplier
+    num_neurons = int(len(self.cities) * self.neurons_multiplier)
     centerx,centery = self.self_org_map.centeroidnp(np.array(self.cities))
     neurons = []
     for i in range(num_neurons):

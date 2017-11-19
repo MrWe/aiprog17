@@ -41,21 +41,22 @@ class App():
         self.cities, self.max_x, self.min_x, self.max_y, self.min_y = rf.read_file('data/'+ str(i) + '.txt', 800, 800)
         self.neurons = self.init_neurons()
         should_break = self.on_start_press()
+        if(self.optimal_count > 0):
+          print("Number of correct: ", self.optimal_count)
+          print('''
+            "learning_rate":''' +  str(self.learning_rate) + ''',
+            "learning_rate_decay":''' + str(self.learning_rate_decay) + ''',
+            "init_neuron_radius":''' + str(self.init_neuron_radius) + ''',
+            "lr_reduction_factor":'''+ str(self.lr_reduction_factor)+''',
+            "epochs": '''+str(self.epochs)+''',
+            "neurons_multiplier": '''+str(self.neurons_multiplier)+''',
+            "num_neighbours": '''+str(self.num_neighbours)+''',
+            "steps": '''+str(self.steps)+'''
+
+          ''')
         if(should_break):
           break
-      if(self.optimal_count > 5):
-        print("Number of correct: ", self.optimal_count)
-        print('''
-          "learning_rate":''' +  str(self.learning_rate) + ''',
-          "learning_rate_decay":''' + str(self.learning_rate_decay) + ''',
-          "init_neuron_radius":''' + str(self.init_neuron_radius) + ''',
-          "lr_reduction_factor":'''+ str(self.lr_reduction_factor)+''',
-          "epochs": '''+str(self.epochs)+''',
-          "neurons_multiplier": '''+str(self.neurons_multiplier)+''',
-          "num_neighbours": '''+str(self.num_neighbours)+''',
-          "steps": '''+str(self.steps)+'''
 
-        ''')
 
 
 
@@ -88,6 +89,7 @@ class App():
     path_length = self.self_org_map.get_path_length(self.re_mapped_cities)
     optimal_path_length = self.optimalTSP[int(self.board-1)]
     if((((path_length / optimal_path_length)*100)-100) < 11):
+
      self.optimal_count += 1
      return False
     return True
